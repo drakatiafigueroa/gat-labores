@@ -315,9 +315,253 @@ textarea{ min-height:65px; resize:vertical; }
 
 .divider{ height:1px; background:#eee; margin:12px 0; }
 .sec-label{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#aaa; margin-bottom:8px; }
+
+/* ── DASHBOARD JEFE ── */
+.kpi-box{
+  background:#fff; border-radius:var(--radio); padding:12px 8px;
+  text-align:center; box-shadow:var(--sombra-l);
+  border-top:3px solid var(--verde);
+}
+.kpi-num{ font-size:22px; font-weight:900; line-height:1; }
+.kpi-lbl{ font-size:9px; color:#888; margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+
+.calor-table{ border-collapse:collapse; width:100%; font-size:11px; }
+.calor-table th{ padding:6px 4px; text-align:center; font-weight:700; color:#888; font-size:10px; }
+.calor-table td{ padding:6px 4px; text-align:center; border-radius:4px; font-weight:800; font-size:12px; }
+.calor-zona{ text-align:left !important; font-weight:700; font-size:12px; padding-right:8px !important; }
+
+.proy-zona-row{ margin-bottom:10px; }
+.proy-zona-label{ display:flex; justify-content:space-between; font-size:12px; font-weight:600; margin-bottom:3px; }
+.proy-bar-wrap{ height:22px; background:#eee; border-radius:6px; overflow:hidden; position:relative; }
+.proy-bar-fill{ height:100%; border-radius:6px; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:800; transition:width .6s; }
+.proy-meta-line{ position:absolute; top:0; bottom:0; width:2px; background:rgba(0,0,0,.3); }
+
+.tec-sem-row{
+  display:grid; grid-template-columns:1fr auto;
+  align-items:center; gap:8px; padding:10px 0;
+  border-bottom:1px solid #f5f5f5;
+}
+.tec-sem-row:last-child{ border-bottom:none; }
+.tec-bar-wrap{ height:8px; background:#eee; border-radius:4px; margin-top:4px; overflow:hidden; }
+.tec-bar-fill{ height:100%; border-radius:4px; transition:width .5s; }
+
+/* MAPA SIMULADO */
+.mapa-punto{
+  position:absolute; width:14px; height:14px; border-radius:50%;
+  border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.3);
+  cursor:pointer; transition:transform .2s;
+}
+.mapa-punto:hover{ transform:scale(1.4); z-index:10; }
+.mapa-tooltip{
+  position:absolute; background:#222; color:#fff;
+  font-size:11px; padding:4px 8px; border-radius:6px;
+  white-space:nowrap; z-index:20; pointer-events:none;
+  transform:translateX(-50%) translateY(-110%);
+}
+
+
+/* ══ LOGIN ══ */
+#login-screen{
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(160deg,#2d5a0e 0%,#4a8a10 40%,#6AAF28 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:24px;
+}
+.login-logo{
+  font-size:48px; margin-bottom:8px;
+}
+.login-marca{
+  font-size:11px; font-weight:800; letter-spacing:3px; color:rgba(255,255,255,.7);
+  text-transform:uppercase; margin-bottom:4px;
+}
+.login-titulo{
+  font-size:22px; font-weight:900; color:#fff; margin-bottom:32px; text-align:center;
+}
+.login-card{
+  background:#fff; border-radius:16px; padding:24px;
+  width:100%; max-width:340px; box-shadow:0 8px 32px rgba(0,0,0,.25);
+}
+.login-card h2{
+  font-size:16px; font-weight:800; color:#2d5a0e;
+  margin-bottom:18px; text-align:center;
+}
+.login-field{ margin-bottom:14px; }
+.login-field label{
+  display:block; font-size:11px; font-weight:700; color:#666;
+  text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;
+}
+.login-field input{
+  width:100%; border:1.5px solid #ddd; border-radius:8px;
+  padding:11px 14px; font-size:16px; font-family:inherit;
+  letter-spacing:2px; text-align:center;
+}
+.login-field input:focus{ outline:none; border-color:#6AAF28; }
+.btn-login{
+  width:100%; padding:13px; border:none; border-radius:9px;
+  background:#6AAF28; color:#fff; font-size:16px; font-weight:800;
+  cursor:pointer; margin-top:4px;
+}
+.btn-login:active{ background:#4a8a10; }
+.login-error{
+  color:#c62828; font-size:12px; font-weight:700;
+  text-align:center; margin-top:10px; min-height:18px;
+}
+.login-role-tabs{
+  display:flex; gap:2px; margin-bottom:18px;
+  background:#f0f0f0; border-radius:8px; padding:3px;
+}
+.login-role-tab{
+  flex:1; padding:8px; text-align:center; font-size:12px;
+  font-weight:700; border-radius:6px; cursor:pointer; color:#888;
+}
+.login-role-tab.active{ background:#fff; color:#2d5a0e; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+/* ══ ADMIN TÉCNICOS ══ */
+.admin-tec-row{
+  display:grid; grid-template-columns:1fr auto auto;
+  gap:8px; align-items:center; padding:9px 0;
+  border-bottom:1px solid #f0f0f0; font-size:13px;
+}
+.admin-tec-row:last-child{ border-bottom:none; }
+.badge-activo{ background:#d4edda; color:#1a6b2e; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:800; }
+.badge-inactivo{ background:#f8d7da; color:#842029; padding:3px 8px; border-radius:12px; font-size:10px; font-weight:800; }
+
+
+/* ── FOTO TÉCNICO ── */
+.tec-avatar{
+  width:60px;height:60px;border-radius:50%;object-fit:cover;
+  border:3px solid var(--verde);background:#eee;
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;overflow:hidden;
+}
+.tec-avatar img{ width:100%;height:100%;object-fit:cover; }
+.avatar-upload{ position:relative;cursor:pointer; }
+.avatar-upload input{ position:absolute;inset:0;opacity:0;cursor:pointer; }
+
+/* ── BÚSQUEDA POR ID ── */
+.id-search-wrap{ position:relative; }
+.id-search-wrap input{ padding-right:48px; font-size:18px; font-weight:700; letter-spacing:1px; }
+.id-search-btn{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:var(--verde);color:#fff;border:none;border-radius:7px;
+  padding:6px 12px;font-size:13px;font-weight:800;cursor:pointer;
+}
+.prod-found-card{
+  background:var(--verde-l);border:2px solid var(--verde);
+  border-radius:10px;padding:12px;margin-top:8px;
+  display:flex;align-items:center;gap:12px;
+}
+.prod-found-avatar{
+  width:48px;height:48px;border-radius:50%;background:var(--verde);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;font-weight:900;flex-shrink:0;
+}
+
+/* ── BORRADOR / GUARDADO PARCIAL ── */
+.draft-bar{
+  background:#fff3cd;border:1.5px solid var(--amarillo);
+  border-radius:8px;padding:8px 12px;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;font-weight:700;color:#856404;
+}
+.draft-bar button{
+  background:var(--amarillo);color:#fff;border:none;border-radius:6px;
+  padding:4px 10px;font-size:11px;font-weight:800;cursor:pointer;
+}
+
+/* ── ANOTACIÓN EN MAPA ── */
+#anotacion-canvas{
+  width:100%;height:200px;border:2px dashed #ccc;
+  border-radius:8px;touch-action:none;cursor:crosshair;
+  background:#f0f7e8;display:block;
+}
+#anotacion-canvas.tiene-nota{ border-color:var(--caña);border-style:solid; }
+.anotacion-tools{ display:flex;gap:6px;margin-top:6px;flex-wrap:wrap; }
+.tool-btn{
+  padding:5px 10px;border-radius:6px;border:1.5px solid #ddd;
+  background:#fff;font-size:11px;font-weight:700;cursor:pointer;
+}
+.tool-btn.active{ background:var(--caña);color:#fff;border-color:var(--caña); }
+
+/* ── VIDEO ── */
+.media-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px; }
+.media-thumb{
+  aspect-ratio:1;border-radius:7px;object-fit:cover;
+  border:2px solid #ddd;width:100%;background:#111;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;
+}
+.media-add{
+  aspect-ratio:1;border-radius:7px;border:2px dashed #ccc;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;background:var(--gris-l);gap:3px;
+}
+.media-add span{ font-size:9px;font-weight:700;color:#aaa; }
+
+/* ── PERFIL TÉCNICO EN HEADER ── */
+.tec-header-avatar{
+  width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,255,255,.7);
+  object-fit:cover;background:rgba(255,255,255,.3);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  overflow:hidden;flex-shrink:0;
+}
+
+/* ── CARGA MASIVA ── */
+.upload-drop{
+  border:2px dashed var(--verde);border-radius:10px;
+  padding:24px;text-align:center;background:var(--verde-l);
+  cursor:pointer;transition:background .2s;
+}
+.upload-drop:hover{ background:#d4edda; }
+.upload-drop .ico{ font-size:36px;margin-bottom:6px; }
+.upload-drop p{ font-size:13px;color:var(--verde-d);font-weight:600; }
+
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════
+     PANTALLA DE LOGIN
+═══════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-logo">🌿</div>
+  <div class="login-marca">GAT · KFR Consultoría</div>
+  <div class="login-titulo">Labores Culturales</div>
+
+  <div class="login-card">
+    <div class="login-role-tabs">
+      <div class="login-role-tab active" onclick="setLoginRole('tecnico',this)">👷 Técnico</div>
+      <div class="login-role-tab" onclick="setLoginRole('jefe',this)">📊 Jefe</div>
+    </div>
+
+    <!-- TÉCNICO -->
+    <div id="login-tecnico-form">
+      <div class="login-field">
+        <label>Tu código de técnico</label>
+        <input type="text" id="login-codigo" placeholder="TECH01" maxlength="8"
+               style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="login-field">
+        <label>PIN (4 dígitos)</label>
+        <input type="password" id="login-pin" placeholder="••••" maxlength="4"
+               inputmode="numeric" onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <button class="btn-login" onclick="doLogin()">Entrar →</button>
+    </div>
+
+    <!-- JEFE -->
+    <div id="login-jefe-form" style="display:none;">
+      <div class="login-field">
+        <label>Contraseña maestra</label>
+        <input type="password" id="login-jefe-pass" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLoginJefe()">
+      </div>
+      <button class="btn-login" onclick="doLoginJefe()">Entrar al dashboard →</button>
+    </div>
+
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
 
 <header>
   <div class="h-top">
@@ -375,15 +619,28 @@ textarea{ min-height:65px; resize:vertical; }
     </div>
   </div>
 
+  <!-- BORRADOR -->
+  <div class="draft-bar" id="draft-bar" style="display:none;">
+    ⚠️ Tienes una captura en borrador sin guardar
+    <button onclick="cargarBorrador()">Continuar →</button>
+  </div>
+
   <div class="card">
-    <div class="card-title">Productor</div>
+    <div class="card-title">Buscar productor por ID</div>
     <div class="field">
-      <select id="sel-productor" onchange="onProductorChange()">
-        <option value="">— Selecciona un productor —</option>
-      </select>
+      <label>ID del productor</label>
+      <div class="id-search-wrap">
+        <input type="text" id="id-busqueda" placeholder="Escribe el ID (ej: P-001 o 25270)"
+               oninput="this.value=this.value.toUpperCase()"
+               onkeydown="if(event.key==='Enter') buscarProductorPorId()">
+        <button class="id-search-btn" onclick="buscarProductorPorId()">Buscar</button>
+      </div>
     </div>
-    <div id="info-productor" style="display:none; padding:10px; background:var(--verde-l); border-radius:8px; font-size:13px;"></div>
-    <button class="btn-outline-sm" onclick="openModal('modal-nuevo-prod')" style="margin-top:10px;">+ Registrar productor</button>
+    <div id="info-productor" style="display:none;"></div>
+    <!-- select oculto para compatibilidad -->
+    <select id="sel-productor" style="display:none;" onchange="onProductorChange()">
+      <option value="">—</option>
+    </select>
   </div>
 
   <div class="card">
@@ -424,14 +681,35 @@ textarea{ min-height:65px; resize:vertical; }
     </div>
   </div>
 
-  <!-- FOTOS -->
+  <!-- MEDIA: FOTOS + VIDEO -->
   <div class="card">
-    <div class="card-title">📷 Fotos de parcela</div>
-    <p style="font-size:12px;color:#888;margin-bottom:8px;">Agrega hasta 4 fotos del cultivo o incidencias.</p>
-    <div class="foto-grid" id="foto-grid">
-      <div class="foto-add" onclick="document.getElementById('foto-input').click()">+</div>
+    <div class="card-title">📷 Evidencia — fotos y video</div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px;">Hasta 4 fotos o videos del cultivo, parcela e incidencias.</p>
+    <div class="media-grid" id="media-grid">
+      <div class="media-add" onclick="document.getElementById('foto-input').click()">
+        <span>📷</span><span>Foto</span>
+      </div>
+      <div class="media-add" onclick="document.getElementById('video-input').click()">
+        <span>🎥</span><span>Video</span>
+      </div>
     </div>
     <input type="file" id="foto-input" accept="image/*" capture="environment" style="display:none" multiple onchange="onFotos(event)">
+    <input type="file" id="video-input" accept="video/*" capture="environment" style="display:none" onchange="onVideo(event)">
+  </div>
+
+  <!-- ANOTACIÓN EN MAPA / PARCELA -->
+  <div class="card">
+    <div class="card-title">✏️ Anotación en parcela</div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px;">Dibuja sobre el croquis de la parcela para marcar zonas anegadas, con plaga, sin cosechar, etc.</p>
+    <canvas id="anotacion-canvas"></canvas>
+    <div class="anotacion-tools">
+      <button class="tool-btn active" id="tool-rojo" onclick="setTool('rojo',this)">🔴 Problema</button>
+      <button class="tool-btn" id="tool-azul"  onclick="setTool('azul',this)">🔵 Anegado</button>
+      <button class="tool-btn" id="tool-amarillo" onclick="setTool('amarillo',this)">🟡 Atención</button>
+      <button class="tool-btn" id="tool-verde" onclick="setTool('verde',this)">🟢 Bien</button>
+      <button class="tool-btn" onclick="limpiarAnotacion()">🗑 Borrar</button>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-top:6px;" id="anot-status"></div>
   </div>
 
   <!-- FIRMA -->
@@ -485,43 +763,72 @@ textarea{ min-height:65px; resize:vertical; }
 </div>
 
 <!-- ══════════════════════════════════════════
-     TAB 4 — DASHBOARD JEFE
+     TAB 4 — DASHBOARD JEFE (COMPLETO)
 ═══════════════════════════════════════════ -->
 <div id="view-dashboard" class="view">
-  <!-- filtro zona -->
+
+  <!-- FILTROS -->
   <div class="card" style="padding:10px 14px;">
-    <div style="display:flex;align-items:center;gap:10px;">
-      <label style="margin:0;text-transform:none;font-size:13px;font-weight:600;">Filtrar zona:</label>
-      <select id="dash-zona-filter" onchange="renderDashboard()" style="flex:1;">
-        <option value="">Todas las zonas</option>
-        <option>La Joya</option>
-        <option>La Gloria</option>
-        <option>San Cristóbal</option>
-        <option>Independencia</option>
-      </select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div>
+        <label style="font-size:10px;font-weight:800;text-transform:uppercase;color:#888;">Zona / Ingenio</label>
+        <select id="dash-zona-filter" onchange="renderDashboard()" style="width:100%;margin-top:3px;">
+          <option value="">Todas las zonas</option>
+          <option>La Joya</option><option>La Gloria</option>
+          <option>San Cristóbal</option><option>Independencia</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:10px;font-weight:800;text-transform:uppercase;color:#888;">Técnico</label>
+        <select id="dash-tec-filter" onchange="renderDashboard()" style="width:100%;margin-top:3px;">
+          <option value="">Todos los técnicos</option>
+        </select>
+      </div>
     </div>
   </div>
 
-  <div class="stat-grid" id="dash-stats"></div>
+  <!-- KPIs -->
+  <div id="dash-kpis" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;"></div>
 
+  <!-- SEMÁFORO TÉCNICOS -->
   <div class="card">
-    <div class="card-title">Resumen por labor (última visita)</div>
-    <div class="lsr">
-      <div></div>
-      <div class="lsr-h" style="color:#1a6b2e">✅</div>
-      <div class="lsr-h" style="color:#856404">⚠️</div>
-      <div class="lsr-h" style="color:#842029">🔴</div>
-    </div>
-    <div id="dash-labores"></div>
+    <div class="card-title">👷 Semáforo de técnicos — hoy</div>
+    <div id="dash-tec-semaforo"></div>
   </div>
 
+  <!-- MAPA DE CALOR POR ZONA Y LABOR -->
   <div class="card">
-    <div class="card-title">Alertas activas</div>
+    <div class="card-title">🗺 Labores críticas por zona</div>
+    <p style="font-size:11px;color:#888;margin-bottom:10px;">% de productores que NO han realizado cada labor. Rojo = zona en riesgo.</p>
+    <div id="dash-calor" style="overflow-x:auto;"></div>
+  </div>
+
+  <!-- PROYECCIÓN DE CAÑA POR ZONA -->
+  <div class="card">
+    <div class="card-title">🌾 Proyección de caña vs. meta de zafra</div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>Meta total de zafra (ton)</label>
+      <input type="number" id="dash-meta-zafra" value="120000" step="5000" oninput="renderDashboard()" style="font-size:13px;padding:7px 10px;">
+    </div>
+    <div id="dash-proyeccion"></div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="card">
+    <div class="card-title">🚨 Productores en riesgo</div>
     <div id="dash-alertas"></div>
   </div>
 
+  <!-- MAPA DE PARCELAS -->
   <div class="card">
-    <div class="card-title">Últimas 10 visitas</div>
+    <div class="card-title">📍 Mapa de visitas</div>
+    <p style="font-size:11px;color:#888;margin-bottom:8px;">🟢 Visitado al día · 🟡 Destiempo · 🔴 Sin visitar o en riesgo</p>
+    <div id="dash-mapa" style="height:260px;border-radius:8px;overflow:hidden;background:#e8f5d6;position:relative;"></div>
+  </div>
+
+  <!-- ÚLTIMAS VISITAS -->
+  <div class="card">
+    <div class="card-title">📋 Últimas visitas registradas</div>
     <div id="dash-ultimas"></div>
   </div>
 </div>
@@ -565,6 +872,47 @@ textarea{ min-height:65px; resize:vertical; }
   <div class="modal">
     <button class="close-btn" onclick="closeModal('modal-detalle')">×</button>
     <div id="detalle-contenido"></div>
+  </div>
+</div>
+
+
+<!-- ══ VIEW ADMIN (solo jefe) ══ -->
+
+<!-- ══════════════════════════════════════════
+     TAB — REPORTES (solo jefe)
+═══════════════════════════════════════════ -->
+<div id="view-reportes" class="view">
+  <div id="reportes-contenido">
+    <div style="text-align:center;padding:40px;color:#bbb;">
+      <div style="font-size:40px;margin-bottom:8px;">📄</div>
+      <div>Cargando reportes…</div>
+    </div>
+  </div>
+</div>
+
+<div id="view-admin" class="view">
+  <div id="admin-contenido"></div>
+</div>
+
+<!-- ══ MODAL NUEVO TÉCNICO ══ -->
+<div class="overlay" id="modal-nuevo-tec">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('modal-nuevo-tec')">×</button>
+    <div class="modal-title">Nuevo técnico</div>
+    <div class="row-2">
+      <div class="field"><label>Código</label><input id="nt-codigo" placeholder="TECH06" maxlength="8" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="field"><label>PIN (4 dígitos)</label><input id="nt-pin" placeholder="0000" maxlength="4" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Nombre completo</label><input id="nt-nombre" placeholder="Nombre del técnico"></div>
+    <div class="field">
+      <label>Zona asignada</label>
+      <select id="nt-zona">
+        <option value="">— Zona —</option>
+        <option>La Joya</option><option>La Gloria</option>
+        <option>San Cristóbal</option><option>Independencia</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="guardarNuevoTec()">✅ Agregar técnico</button>
   </div>
 </div>
 
@@ -880,6 +1228,8 @@ async function guardarVisita(){
     documentacion: document.getElementById('documentacion').value,
     credito:       document.getElementById('credito').value,
     fotos:         fotosUrls,
+    videos:        videos_b64.map(v=>v.name),
+    anotacion:     anotData,
     firma:         firmaUrl,
     ts:            new Date().toISOString(),
   };
@@ -897,9 +1247,12 @@ async function guardarVisita(){
   document.getElementById('comentarios').value='';
   document.getElementById('documentacion').value='';
   document.getElementById('credito').value='';
-  fotos_b64=[]; renderFotoGrid();
+  fotos_b64=[]; videos_b64=[]; renderMediaGrid();
   limpiarFirma();
+  limpiarAnotacion();
   resetLabores();
+  limpiarBorrador();
+  document.getElementById('id-busqueda').value='';
 }
 
 // ══════════════════════════════════════════
@@ -1125,89 +1478,284 @@ function eliminarProductor(pid){
 }
 
 // ══════════════════════════════════════════
-// DASHBOARD JEFE
+// DASHBOARD JEFE — COMPLETO
 // ══════════════════════════════════════════
+
+// Coordenadas base por zona (centro aproximado)
+const ZONA_COORDS = {
+  'La Joya':       { lat:18.82, lng:-96.85 },
+  'La Gloria':     { lat:18.90, lng:-96.70 },
+  'San Cristóbal': { lat:18.75, lng:-96.95 },
+  'Independencia': { lat:18.70, lng:-96.60 },
+};
+
 function renderDashboard(){
   const zonaF = document.getElementById('dash-zona-filter').value;
-  const filtP  = zonaF ? productores.filter(p=>p.zona===zonaF) : productores;
-  const filtPids= new Set(filtP.map(p=>p.id));
-  const filtV  = visitas.filter(v=>filtPids.has(v.productorId));
+  const tecF  = document.getElementById('dash-tec-filter').value;
 
-  const total     = filtP.length;
-  const conVisita = [...new Set(filtV.map(v=>v.productorId))].length;
-  const sinVisita = total - conVisita;
+  // Poblar filtro técnicos
+  const tecList = [...new Set(visitas.map(v=>v.tecnico).filter(Boolean))];
+  const tecSel  = document.getElementById('dash-tec-filter');
+  if(tecSel.options.length <= 1){
+    tecList.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.text=t; tecSel.appendChild(o); });
+  }
 
-  document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-box">
-      <div class="stat-num" style="color:var(--verde)">${total}</div>
-      <div class="stat-lbl">Productores</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num" style="color:var(--azul)">${filtV.length}</div>
-      <div class="stat-lbl">Visitas</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-num" style="color:${sinVisita?'var(--rojo)':'var(--verde)'}">${sinVisita}</div>
-      <div class="stat-lbl">Sin visitar</div>
-    </div>`;
+  let filtP = zonaF ? productores.filter(p=>p.zona===zonaF) : productores;
+  const filtPids = new Set(filtP.map(p=>p.id));
+  let filtV = visitas.filter(v=>filtPids.has(v.productorId));
+  if(tecF) filtV = filtV.filter(v=>v.tecnico===tecF);
 
-  // Por labor — última visita de cada prod
-  const laborSt = {};
-  LABORES.forEach(l=>{ laborSt[l.key]={ok:0,warn:0,bad:0}; });
-  filtP.forEach(p=>{
-    const pvs=filtV.filter(v=>v.productorId===p.id);
-    if(!pvs.length) return;
-    const last=pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+  const total      = filtP.length;
+  const conVisita  = [...new Set(filtV.map(v=>v.productorId))].length;
+  const sinVisita  = total - conVisita;
+  const hoy        = new Date().toISOString().split('T')[0];
+  const visitasHoy = filtV.filter(v=>v.fecha===hoy).length;
+  const pctAvance  = total ? Math.round(conVisita/total*100) : 0;
+
+  // ── KPIs ──
+  document.getElementById('dash-kpis').innerHTML = [
+    { num: total,        lbl:'Productores',   color:'var(--verde)' },
+    { num: conVisita,    lbl:'Visitados',      color:'var(--azul)' },
+    { num: sinVisita,    lbl:'Sin visitar',    color: sinVisita?'var(--rojo)':'var(--verde)' },
+    { num: pctAvance+'%',lbl:'Avance zafra',  color: pctAvance>=80?'var(--verde)':pctAvance>=50?'var(--amarillo)':'var(--rojo)' },
+  ].map(k=>`
+    <div class="kpi-box" style="border-top-color:${k.color}">
+      <div class="kpi-num" style="color:${k.color}">${k.num}</div>
+      <div class="kpi-lbl">${k.lbl}</div>
+    </div>`).join('');
+
+  // ── SEMÁFORO TÉCNICOS ──
+  const zonaTotal = {};
+  productores.forEach(p=>{ if(p.zona){ zonaTotal[p.zona]=(zonaTotal[p.zona]||0)+1; } });
+  const tecMap = {};
+  const hoyVisitas = filtV.filter(v=>v.fecha===hoy);
+  hoyVisitas.forEach(v=>{
+    const k=v.tecnico||'Sin nombre';
+    if(!tecMap[k]) tecMap[k]={ zona:v.zona||'—', visitados:new Set() };
+    tecMap[k].visitados.add(v.productorId);
+  });
+  const tecEntries = Object.entries(tecMap);
+  document.getElementById('dash-tec-semaforo').innerHTML = tecEntries.length
+    ? tecEntries.map(([nombre,t])=>{
+        const asig  = zonaTotal[t.zona]||'?';
+        const visit = t.visitados.size;
+        const pct   = typeof asig==='number'? Math.round(visit/asig*100) : 0;
+        const color = pct>=80?'var(--verde)':pct>=50?'var(--amarillo)':'var(--rojo)';
+        const emoji = pct>=80?'🟢':pct>=50?'🟡':'🔴';
+        return `<div class="tec-sem-row">
+          <div>
+            <div style="font-weight:700;font-size:13px;">${emoji} ${nombre}</div>
+            <div style="font-size:10px;color:#888;">${t.zona} · ${visit}/${asig} productores</div>
+            <div class="tec-bar-wrap">
+              <div class="tec-bar-fill" style="width:${pct}%;background:${color}"></div>
+            </div>
+          </div>
+          <div style="font-size:20px;font-weight:900;color:${color}">${pct}%</div>
+        </div>`;
+      }).join('')
+    : '<div style="text-align:center;padding:16px;color:#bbb;">Sin visitas registradas hoy</div>';
+
+  // ── MAPA DE CALOR — ZONAS × LABORES ──
+  const zonas = zonaF ? [zonaF] : ['La Joya','La Gloria','San Cristóbal','Independencia'];
+  const calorData = {};
+  zonas.forEach(z=>{
+    const zProds = productores.filter(p=>p.zona===z);
+    calorData[z] = {};
     LABORES.forEach(l=>{
-      const s=last.labores[l.key];
-      if(s==='en-tiempo')laborSt[l.key].ok++;
-      else if(s==='destiempo')laborSt[l.key].warn++;
-      else if(s==='no-hecho')laborSt[l.key].bad++;
+      let noHecho=0;
+      zProds.forEach(p=>{
+        const pvs=filtV.filter(v=>v.productorId===p.id);
+        if(!pvs.length){ noHecho++; return; }
+        const last=pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+        if(last.labores[l.key]==='no-hecho'||!last.labores[l.key]) noHecho++;
+      });
+      calorData[z][l.key] = zProds.length ? Math.round(noHecho/zProds.length*100) : 0;
     });
   });
-  document.getElementById('dash-labores').innerHTML=LABORES.map(l=>{
-    const st=laborSt[l.key];
-    return `<div class="lsr">
-      <div class="lsr-n">${l.label}</div>
-      <div class="lsr-v" style="color:#1a6b2e">${st.ok}</div>
-      <div class="lsr-v" style="color:#856404">${st.warn}</div>
-      <div class="lsr-v" style="color:#842029">${st.bad}</div>
+
+  function calorColor(pct){
+    if(pct>=70) return { bg:'#c62828', txt:'#fff' };
+    if(pct>=40) return { bg:'#f9a825', txt:'#fff' };
+    if(pct>=15) return { bg:'#fff3cd', txt:'#856404' };
+    return { bg:'#e8f5d6', txt:'#1a6b2e' };
+  }
+
+  const calorHtml = `<table class="calor-table">
+    <tr>
+      <th style="text-align:left;">Zona</th>
+      ${LABORES.map(l=>`<th>${l.label.split(' ')[0]}<br><span style="font-weight:400;font-size:9px;">${l.label.split(' ').slice(1).join(' ')}</span></th>`).join('')}
+    </tr>
+    ${zonas.map(z=>`<tr>
+      <td class="calor-zona">${z}</td>
+      ${LABORES.map(l=>{
+        const pct=calorData[z]?.[l.key]??0;
+        const c=calorColor(pct);
+        return `<td style="background:${c.bg};color:${c.txt};border-radius:4px;">${pct}%</td>`;
+      }).join('')}
+    </tr>`).join('')}
+  </table>
+  <div style="display:flex;gap:12px;margin-top:8px;font-size:10px;flex-wrap:wrap;">
+    <span>🟢 &lt;15% sin hacer</span>
+    <span>🟡 15–39%</span>
+    <span style="color:var(--naranja);">🟠 40–69%</span>
+    <span style="color:var(--rojo);">🔴 ≥70% crítico</span>
+  </div>`;
+  document.getElementById('dash-calor').innerHTML = calorHtml;
+
+  // ── PROYECCIÓN DE CAÑA ──
+  const metaTotal = parseFloat(document.getElementById('dash-meta-zafra').value)||120000;
+  const metaPorZona = metaTotal / zonas.length;
+  let totalProy = 0;
+
+  const proyHtml = zonas.map(z=>{
+    const zProds = productores.filter(p=>p.zona===z);
+    let tonZona = 0;
+    zProds.forEach(p=>{
+      const ha = parseFloat(p.ha)||3;
+      const rendBase = 75;
+      const pvs = filtV.filter(v=>v.productorId===p.id);
+      let fLab = 0.90;
+      if(pvs.length){
+        const last=pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+        const vals=Object.values(last.labores||{});
+        const ok=vals.filter(x=>x==='en-tiempo').length;
+        const tot=LABORES.length;
+        fLab = 0.70 + (ok/tot)*0.35;
+      }
+      tonZona += rendBase * ha * fLab;
+    });
+    tonZona = Math.round(tonZona);
+    totalProy += tonZona;
+    const pct   = Math.min(tonZona/metaPorZona,1.2);
+    const color = pct>=1?'var(--verde)':pct>=0.8?'var(--amarillo)':'var(--rojo)';
+    return `<div class="proy-zona-row">
+      <div class="proy-zona-label">
+        <span><strong>${z}</strong></span>
+        <span style="color:${color};font-weight:800;">${tonZona.toLocaleString('es-MX')} ton</span>
+      </div>
+      <div class="proy-bar-wrap">
+        <div class="proy-bar-fill" style="width:${Math.min(pct,1)*100}%;background:${color}">
+          ${Math.round(pct*100)}%
+        </div>
+        <div class="proy-meta-line" style="left:${Math.min(metaPorZona/metaPorZona,1)*100}%"></div>
+      </div>
     </div>`;
   }).join('');
 
-  // Alertas
+  document.getElementById('dash-proyeccion').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px;">
+      <span>Total proyectado: <strong style="color:${totalProy>=metaTotal?'var(--verde)':'var(--rojo)'};">${totalProy.toLocaleString('es-MX')} ton</strong></span>
+      <span style="color:#888;">Meta: ${metaTotal.toLocaleString('es-MX')} ton</span>
+    </div>
+    ${proyHtml}`;
+
+  // ── ALERTAS ──
   const alertas=[];
   filtP.forEach(p=>{
     const s=calcScore(p.id);
-    if(!s) alertas.push({tipo:'warn',msg:`${p.nombre} (${p.id}) — sin visitas`});
-    else if(s.bad>3) alertas.push({tipo:'alert',msg:`${p.nombre} — ${s.bad} labores sin realizar (${s.fecha})`});
+    if(!s) alertas.push({tipo:'warn',nombre:p.nombre,id:p.id,zona:p.zona||'',msg:'Sin visitas registradas'});
+    else if(s.bad>3) alertas.push({tipo:'alert',nombre:p.nombre,id:p.id,zona:p.zona||'',msg:`${s.bad} labores sin realizar · última visita: ${s.fecha}`});
   });
-  document.getElementById('dash-alertas').innerHTML=alertas.length
-    ? alertas.map(a=>`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
-        <span class="badge ${a.tipo==='alert'?'badge-r':'badge-y'}">${a.tipo==='alert'?'🚨':'⚠️'}</span>
-        <span style="margin-left:6px;">${a.msg}</span>
-      </div>`).join('')
-    : '<div style="text-align:center;padding:16px;color:#bbb;">✅ Sin alertas</div>';
+  document.getElementById('dash-alertas').innerHTML = alertas.length
+    ? alertas.map(a=>`
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #f5f5f5;font-size:13px;">
+          <span style="font-size:18px;">${a.tipo==='alert'?'🚨':'⚠️'}</span>
+          <div>
+            <strong>${a.nombre}</strong> <span style="font-size:10px;color:#888;">${a.id} · ${a.zona}</span><br>
+            <span style="color:#666;">${a.msg}</span>
+          </div>
+        </div>`).join('')
+    : '<div style="text-align:center;padding:16px;color:#bbb;">✅ Sin productores en riesgo</div>';
 
-  // Últimas
-  const ult=[...filtV].sort((a,b)=>b.ts.localeCompare(a.ts)).slice(0,10);
-  document.getElementById('dash-ultimas').innerHTML=ult.length
+  // ── MAPA DE PARCELAS (SVG simulado con coordenadas relativas) ──
+  renderMapa(filtP, filtV, zonaF);
+
+  // ── ÚLTIMAS VISITAS ──
+  const ult=[...filtV].sort((a,b)=>(b.ts||'').localeCompare(a.ts||'')).slice(0,10);
+  document.getElementById('dash-ultimas').innerHTML = ult.length
     ? ult.map(v=>{
         const p=productores.find(x=>x.id===v.productorId);
-        const ok =Object.values(v.labores).filter(x=>x==='en-tiempo').length;
-        const bad=Object.values(v.labores).filter(x=>x==='no-hecho').length;
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+        const ok =Object.values(v.labores||{}).filter(x=>x==='en-tiempo').length;
+        const bad=Object.values(v.labores||{}).filter(x=>x==='no-hecho').length;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f5f5f5;font-size:13px;">
           <div>
             <strong>${p?p.nombre:v.productorId}</strong>
             <div style="font-size:11px;color:#888;">${v.fecha} · ${v.tecnico||'N/D'} · ${v.zona||''}</div>
           </div>
           <div>
-            <span class="badge badge-g">✅${ok}</span>
+            <span class="badge badge-g" style="margin-right:3px;">✅${ok}</span>
             <span class="badge badge-r">🔴${bad}</span>
           </div>
         </div>`;
       }).join('')
-    : '<div style="text-align:center;padding:16px;color:#bbb;">Sin visitas</div>';
+    : '<div style="text-align:center;padding:16px;color:#bbb;">Sin visitas aún</div>';
+}
+
+function renderMapa(filtP, filtV, zonaF){
+  const wrap = document.getElementById('dash-mapa');
+  const W = wrap.offsetWidth || 320;
+  const H = 260;
+
+  // Calcular bounding box de coordenadas
+  const zonas = zonaF ? [zonaF] : Object.keys(ZONA_COORDS);
+  const lats = zonas.map(z=>ZONA_COORDS[z]?.lat).filter(Boolean);
+  const lngs = zonas.map(z=>ZONA_COORDS[z]?.lng).filter(Boolean);
+  const minLat=Math.min(...lats)-0.15, maxLat=Math.max(...lats)+0.15;
+  const minLng=Math.min(...lngs)-0.15, maxLng=Math.max(...lngs)+0.15;
+
+  function toXY(lat,lng){
+    const x = ((lng-minLng)/(maxLng-minLng))*(W-40)+20;
+    const y = ((maxLat-lat)/(maxLat-minLat))*(H-40)+20;
+    return { x, y };
+  }
+
+  // Puntos de productores (posición aproximada alrededor de su zona)
+  const puntos = filtP.map((p,i)=>{
+    const base = ZONA_COORDS[p.zona] || { lat:18.80, lng:-96.80 };
+    const angle = (i/(filtP.length||1))*2*Math.PI;
+    const r = 0.04 + (i%3)*0.02;
+    const lat = base.lat + r*Math.sin(angle);
+    const lng = base.lng + r*Math.cos(angle);
+    const s = calcScore(p.id);
+    const color = !s ? '#c62828' : s.bad>3 ? '#c62828' : s.bad>0||s.warn>2 ? '#f9a825' : '#6AAF28';
+    const pos = toXY(lat,lng);
+    return { ...p, lat, lng, color, pos, score:s };
+  });
+
+  // Etiquetas de zonas
+  const zonaLabels = zonas.map(z=>{
+    const c=ZONA_COORDS[z]; if(!c) return '';
+    const pos=toXY(c.lat,c.lng);
+    return `<text x="${pos.x}" y="${pos.y}" text-anchor="middle" font-size="10" fill="#4a8a10" font-weight="700" font-family="Arial">${z}</text>`;
+  }).join('');
+
+  // SVG
+  const svgPuntos = puntos.map(p=>`
+    <circle cx="${p.pos.x.toFixed(1)}" cy="${p.pos.y.toFixed(1)}" r="6"
+      fill="${p.color}" stroke="#fff" stroke-width="2"
+      style="cursor:pointer;" opacity="0.9">
+      <title>${p.nombre} (${p.id}) · ${p.zona||'?'}
+${p.score ? `✅${p.score.ok} ⚠️${p.score.warn} 🔴${p.score.bad}` : 'Sin visitas'}</title>
+    </circle>`).join('');
+
+  wrap.innerHTML = `
+    <svg width="${W}" height="${H}" style="background:linear-gradient(135deg,#e8f5d6,#f5ecd5);border-radius:8px;">
+      <!-- Fondo campos -->
+      <rect width="${W}" height="${H}" fill="#e8f5d6" rx="8"/>
+      <!-- Grid suave -->
+      ${Array.from({length:5},(_,i)=>`<line x1="0" y1="${i*H/4}" x2="${W}" y2="${i*H/4}" stroke="#cde8a0" stroke-width="0.5"/>`).join('')}
+      ${Array.from({length:7},(_,i)=>`<line x1="${i*W/6}" y1="0" x2="${i*W/6}" y2="${H}" stroke="#cde8a0" stroke-width="0.5"/>`).join('')}
+      <!-- Zonas labels -->
+      ${zonaLabels}
+      <!-- Productores -->
+      ${svgPuntos}
+    </svg>
+    <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;flex-wrap:wrap;">
+      <span>🟢 Al día &nbsp;</span>
+      <span>🟡 Destiempo/parcial &nbsp;</span>
+      <span>🔴 Sin visita o en riesgo</span>
+      <span style="color:#888;margin-left:auto;">📍 ${puntos.length} productores</span>
+    </div>`;
 }
 
 // ══════════════════════════════════════════
@@ -1216,8 +1764,13 @@ function renderDashboard(){
 function switchTab(name){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
-  document.getElementById('view-'+name).classList.add('active');
+  const activeTab = document.querySelector(`[onclick="switchTab('${name}')"]`);
+  if(activeTab) activeTab.classList.add('active');
+  const activeView = document.getElementById('view-'+name);
+  if(activeView) activeView.classList.add('active');
+  if(name==='admin')    renderAdmin();
+  setTimeout(renderCargaPadron, 100);
+  if(name==='reportes') renderReportes();
   if(name==='productores') renderProductores();
   if(name==='dashboard')   renderDashboard();
   if(name==='tecnicos')    renderTecnicos();
@@ -1252,8 +1805,962 @@ if(stz) document.getElementById('tec-zona').value=stz;
 document.getElementById('tec-nombre').addEventListener('change',e=>localStorage.setItem('gat_tec_nombre',e.target.value));
 document.getElementById('tec-zona').addEventListener('change',e=>localStorage.setItem('gat_tec_zona',e.target.value));
 
+// Cargar datos demo si la base está vacía
+cargarDemoSiVacio();
+
+// Inicializar canvas de anotación
+setTimeout(initAnotCanvas, 300);
+
+// Verificar borrador pendiente
+setTimeout(()=>{
+  const b = ld('gat_borrador',null);
+  if(b && (b.productorId||b.observaciones)){
+    document.getElementById('draft-bar').style.display='flex';
+  }
+}, 500);
+
 // Intentar sincronizar cola pendiente al cargar
 setTimeout(flushQueue, 2000);
+
+// ══════════════════════════════════════════
+// SISTEMA DE ACCESO
+// ══════════════════════════════════════════
+
+// Técnicos pre-cargados (el jefe puede agregar más desde la app)
+const TECNICOS_DEFAULT = [
+  { codigo:'TECH01', pin:'1234', nombre:'Carlos Mendoza',  zona:'La Joya',       activo:true },
+  { codigo:'TECH02', pin:'2345', nombre:'Rosa López',       zona:'La Gloria',     activo:true },
+  { codigo:'TECH03', pin:'3456', nombre:'Miguel Ángel Cruz',zona:'San Cristóbal', activo:true },
+  { codigo:'TECH04', pin:'4567', nombre:'Patricia Vázquez', zona:'Independencia', activo:true },
+  { codigo:'TECH05', pin:'5678', nombre:'Jorge Hernández',  zona:'La Joya',       activo:true },
+];
+const JEFE_PASSWORD = 'GAT2026jefe'; // Cámbiala desde el panel de administración
+
+function getTecnicos(){
+  return ld('gat_tecnicos', TECNICOS_DEFAULT);
+}
+function getJefePass(){
+  return localStorage.getItem('gat_jefe_pass') || JEFE_PASSWORD;
+}
+
+let loginRole = 'tecnico';
+let sesionActual = null; // { codigo, nombre, zona, rol }
+
+function setLoginRole(role, el){
+  loginRole = role;
+  document.querySelectorAll('.login-role-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('login-tecnico-form').style.display = role==='tecnico' ? 'block' : 'none';
+  document.getElementById('login-jefe-form').style.display    = role==='jefe'    ? 'block' : 'none';
+  document.getElementById('login-error').textContent = '';
+}
+
+function doLogin(){
+  const codigo = document.getElementById('login-codigo').value.trim().toUpperCase();
+  const pin    = document.getElementById('login-pin').value.trim();
+  const error  = document.getElementById('login-error');
+
+  if(!codigo || !pin){ error.textContent='Ingresa tu código y PIN'; return; }
+
+  const tecnicos = getTecnicos();
+  const tec = tecnicos.find(t=>t.codigo===codigo && t.pin===pin);
+
+  if(!tec){ error.textContent='Código o PIN incorrecto'; return; }
+  if(!tec.activo){ error.textContent='Tu acceso está desactivado. Contacta al supervisor.'; return; }
+
+  sesionActual = { codigo:tec.codigo, nombre:tec.nombre, zona:tec.zona, rol:'tecnico' };
+  entrar();
+}
+
+function doLoginJefe(){
+  const pass  = document.getElementById('login-jefe-pass').value;
+  const error = document.getElementById('login-error');
+  if(pass !== getJefePass()){ error.textContent='Contraseña incorrecta'; return; }
+  sesionActual = { codigo:'JEFE', nombre:'Administrador', zona:'', rol:'jefe' };
+  entrar();
+}
+
+function entrar(){
+  // Guardar sesión en sessionStorage (se borra al cerrar el navegador)
+  sessionStorage.setItem('gat_sesion', JSON.stringify(sesionActual));
+  document.getElementById('login-screen').style.display = 'none';
+  aplicarPermisos();
+  // Pre-llenar nombre del técnico
+  if(sesionActual.rol==='tecnico'){
+    document.getElementById('tec-nombre').value = sesionActual.nombre;
+    localStorage.setItem('gat_tec_nombre', sesionActual.nombre);
+    // Pre-seleccionar zona
+    const sel = document.getElementById('tec-zona');
+    if(sel) sel.value = sesionActual.zona;
+    localStorage.setItem('gat_tec_zona', sesionActual.zona);
+    // Bloquear cambios de nombre y zona
+    document.getElementById('tec-nombre').readOnly = true;
+    document.getElementById('tec-zona').disabled = true;
+    // Ocultar pestaña Jefe a técnicos
+    document.querySelectorAll('.tab').forEach(t=>{
+      if(t.textContent.includes('Jefe')) t.style.display='none';
+    });
+  }
+  // Mostrar nombre en header
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  // Agregar nombre al header
+  const hTop = document.querySelector('.h-top');
+  const userChip = document.createElement('div');
+  userChip.style.cssText='font-size:10px;color:rgba(255,255,255,.85);text-align:right;line-height:1.3;';
+  userChip.innerHTML=`<strong>${sesionActual.nombre}</strong><br><span style="opacity:.7">${sesionActual.zona||'Jefe'}</span>`;
+  hTop.appendChild(userChip);
+  updateSyncUI();
+}
+
+function aplicarPermisos(){
+  if(!sesionActual) return;
+  if(sesionActual.rol==='jefe'){
+    // Jefe ve todo — agregar tab de admin
+    const tabs = document.querySelector('.tabs');
+    const adminTab = document.createElement('div');
+    adminTab.className = 'tab';
+    adminTab.textContent = '⚙️ Admin';
+    adminTab.onclick = ()=>switchTab('admin');
+    tabs.appendChild(adminTab);
+  }
+}
+
+function cerrarSesion(){
+  sessionStorage.removeItem('gat_sesion');
+  location.reload();
+}
+
+// Verificar sesión al cargar
+(function checkSession(){
+  const s = sessionStorage.getItem('gat_sesion');
+  if(s){
+    try{
+      sesionActual = JSON.parse(s);
+      document.getElementById('login-screen').style.display='none';
+      aplicarPermisos();
+      // Restaurar datos de sesión
+      if(sesionActual.rol==='tecnico'){
+        setTimeout(()=>{
+          const n=document.getElementById('tec-nombre');
+          const z=document.getElementById('tec-zona');
+          if(n){ n.value=sesionActual.nombre; n.readOnly=true; }
+          if(z){ z.value=sesionActual.zona; z.disabled=true; }
+          document.querySelectorAll('.tab').forEach(t=>{
+            if(t.textContent.includes('Jefe')) t.style.display='none';
+          });
+        }, 100);
+      }
+    } catch(e){ sessionStorage.removeItem('gat_sesion'); }
+  }
+})();
+
+// ══════════════════════════════════════════
+// PANEL DE ADMINISTRACIÓN (solo jefe)
+// ══════════════════════════════════════════
+function renderAdmin(){
+  const tecnicos = getTecnicos();
+  const el = document.getElementById('admin-contenido');
+  if(!el) return;
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">Técnicos registrados</div>
+      ${tecnicos.map((t,i)=>`
+        <div class="admin-tec-row">
+          <div>
+            <div style="font-weight:700">${t.nombre}</div>
+            <div style="font-size:11px;color:#888;">${t.codigo} · ${t.zona}</div>
+          </div>
+          <span class="${t.activo?'badge-activo':'badge-inactivo'}">${t.activo?'Activo':'Bloqueado'}</span>
+          <button onclick="toggleTecnico(${i})" style="border:none;background:none;font-size:18px;cursor:pointer;">
+            ${t.activo?'🔴':'🟢'}
+          </button>
+        </div>`).join('')}
+      <div style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="openModal('modal-nuevo-tec')">+ Agregar técnico</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Cambiar contraseña maestra</div>
+      <div class="login-field">
+        <label>Nueva contraseña</label>
+        <input type="password" id="admin-new-pass" placeholder="Mínimo 6 caracteres">
+      </div>
+      <div class="login-field">
+        <label>Confirmar</label>
+        <input type="password" id="admin-confirm-pass" placeholder="Repite la contraseña">
+      </div>
+      <button class="btn btn-primary" onclick="cambiarPass()">Guardar contraseña</button>
+      <div id="admin-pass-msg" style="font-size:12px;margin-top:8px;font-weight:700;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Sesión actual</div>
+      <p style="font-size:13px;margin-bottom:12px;">Conectado como: <strong>${sesionActual?.nombre}</strong></p>
+      <button class="btn btn-danger" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+    </div>`;
+}
+
+function toggleTecnico(i){
+  const tecnicos = getTecnicos();
+  tecnicos[i].activo = !tecnicos[i].activo;
+  sv('gat_tecnicos', tecnicos);
+  renderAdmin();
+  showToast(tecnicos[i].activo ? '✅ Técnico activado' : '🔴 Técnico bloqueado');
+}
+
+function cambiarPass(){
+  const np = document.getElementById('admin-new-pass').value;
+  const cp = document.getElementById('admin-confirm-pass').value;
+  const msg= document.getElementById('admin-pass-msg');
+  if(np.length<6){ msg.style.color='#c62828'; msg.textContent='Mínimo 6 caracteres'; return; }
+  if(np!==cp){ msg.style.color='#c62828'; msg.textContent='Las contraseñas no coinciden'; return; }
+  localStorage.setItem('gat_jefe_pass', np);
+  msg.style.color='#1a6b2e'; msg.textContent='✅ Contraseña guardada';
+  document.getElementById('admin-new-pass').value='';
+  document.getElementById('admin-confirm-pass').value='';
+}
+
+
+function guardarNuevoTec(){
+  const codigo = document.getElementById('nt-codigo').value.trim().toUpperCase();
+  const pin    = document.getElementById('nt-pin').value.trim();
+  const nombre = document.getElementById('nt-nombre').value.trim();
+  const zona   = document.getElementById('nt-zona').value;
+  if(!codigo||!pin||!nombre||!zona){ showToast('⚠️ Completa todos los campos'); return; }
+  if(pin.length!==4||isNaN(pin)){ showToast('⚠️ El PIN debe ser 4 dígitos'); return; }
+  const tecnicos = getTecnicos();
+  if(tecnicos.find(t=>t.codigo===codigo)){ showToast('⚠️ Ese código ya existe'); return; }
+  tecnicos.push({ codigo, pin, nombre, zona, activo:true });
+  sv('gat_tecnicos', tecnicos);
+  closeModal('modal-nuevo-tec');
+  renderAdmin();
+  showToast('✅ Técnico agregado');
+  ['nt-codigo','nt-pin','nt-nombre'].forEach(id=>{ document.getElementById(id).value=''; });
+  document.getElementById('nt-zona').value='';
+}
+
+
+// ══════════════════════════════════════════
+// DATOS DE DEMOSTRACIÓN
+// ══════════════════════════════════════════
+function cargarDemoSiVacio(){
+  if(productores.length > 0) return; // ya hay datos reales
+
+  const hoy = new Date();
+  function daysAgo(n){
+    const d = new Date(hoy); d.setDate(d.getDate()-n);
+    return d.toISOString().split('T')[0];
+  }
+
+  const PRODS_DEMO = [
+    { id:'P-001', nombre:'Juan López Sánchez',       edad:'62', zona:'La Joya',       ejido:'Ejido El Carmen', ha:'4.5', tel:'271-100-0001', curp:'LOSJ620315HVZPNX01', ine:'INE001' },
+    { id:'P-002', nombre:'María Hernández Cruz',      edad:'55', zona:'La Joya',       ejido:'Ejido El Carmen', ha:'3.0', tel:'271-100-0002', curp:'HECM550820MVZRNR02', ine:'INE002' },
+    { id:'P-003', nombre:'Pedro Ramírez Ortega',      edad:'68', zona:'La Gloria',     ejido:'Ejido La Gloria', ha:'6.0', tel:'271-100-0003', curp:'RAOP680512HVZMRD03', ine:'INE003' },
+    { id:'P-004', nombre:'Ana Flores Morales',        edad:'49', zona:'La Gloria',     ejido:'Ejido La Gloria', ha:'2.5', tel:'271-100-0004', curp:'FOMA490730MVZLRN04', ine:'INE004' },
+    { id:'P-005', nombre:'Luis Torres Pérez',         edad:'71', zona:'San Cristóbal', ejido:'Ejido San Cristóbal', ha:'5.0', tel:'271-100-0005', curp:'TOPL710218HVZRRS05', ine:'INE005' },
+    { id:'P-006', nombre:'Carmen Ruiz Vázquez',       edad:'58', zona:'San Cristóbal', ejido:'Ejido San Cristóbal', ha:'4.0', tel:'271-100-0006', curp:'RUVC580904MVZZRR06', ine:'INE006' },
+    { id:'P-007', nombre:'Roberto García Luna',       edad:'64', zona:'Independencia', ejido:'Ejido Independencia', ha:'3.5', tel:'271-100-0007', curp:'GALR640623HVZRLN07', ine:'INE007' },
+    { id:'P-008', nombre:'Isabel Morales Fuentes',    edad:'53', zona:'Independencia', ejido:'Ejido Independencia', ha:'5.5', tel:'271-100-0008', curp:'MOFI530415MVZRNS08', ine:'INE008' },
+    { id:'P-009', nombre:'Miguel Ángel Díaz Castro',  edad:'60', zona:'La Joya',       ejido:'Ejido Nuevo León',    ha:'7.0', tel:'271-100-0009', curp:'DICM600711HVZZCS09', ine:'INE009' },
+    { id:'P-010', nombre:'Gloria Vázquez Mendoza',    edad:'47', zona:'La Gloria',     ejido:'Ejido La Gloria',     ha:'2.0', tel:'271-100-0010', curp:'VAMG470925MVZZDN10', ine:'INE010' },
+  ];
+
+  const VISITAS_DEMO = [
+    // P-001 — buen productor, todo al día
+    { productorId:'P-001', fecha:daysAgo(2), tecnico:'Carlos Mendoza', zona:'La Joya',
+      labores:{ riego:'en-tiempo', fertilizacion:'en-tiempo', control_plagas:'en-tiempo',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'en-tiempo',
+                agroquimicos:'en-tiempo', control_biologico:'en-tiempo' },
+      observaciones:'Cañal en excelentes condiciones. Buen macollamiento.',
+      comentarios:'Productor muy comprometido. Sugiero como candidato a difusor.',
+      documentacion:'completa', credito:'al-corriente' },
+
+    // P-002 — algunos en destiempo
+    { productorId:'P-002', fecha:daysAgo(3), tecnico:'Carlos Mendoza', zona:'La Joya',
+      labores:{ riego:'destiempo', fertilizacion:'destiempo', control_plagas:'no-hecho',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'destiempo',
+                agroquimicos:'no-hecho', control_biologico:'en-tiempo' },
+      observaciones:'Retraso en aplicación de agroquímicos. Inicio de daño por barrenador.',
+      comentarios:'Requiere visita de seguimiento urgente para control de barrenador.',
+      documentacion:'incompleta', credito:'en-gestion' },
+
+    // P-003 — excelente, parcela grande
+    { productorId:'P-003', fecha:daysAgo(1), tecnico:'Rosa López', zona:'La Gloria',
+      labores:{ riego:'en-tiempo', fertilizacion:'en-tiempo', control_plagas:'en-tiempo',
+                siembra:'en-tiempo', resiembra:'destiempo', cachaza:'en-tiempo',
+                agroquimicos:'en-tiempo', control_biologico:'en-tiempo' },
+      observaciones:'Parcela de 6 ha con rendimiento esperado superior al promedio.',
+      comentarios:'Resiembra pendiente en 0.5 ha por falla de germinación.',
+      documentacion:'completa', credito:'al-corriente' },
+
+    // P-004 — productora en riesgo
+    { productorId:'P-004', fecha:daysAgo(5), tecnico:'Rosa López', zona:'La Gloria',
+      labores:{ riego:'no-hecho', fertilizacion:'no-hecho', control_plagas:'no-hecho',
+                siembra:'en-tiempo', resiembra:'no-hecho', cachaza:'no-hecho',
+                agroquimicos:'no-hecho', control_biologico:'no-hecho' },
+      observaciones:'Productora con dificultades económicas. Parcela con signos de abandono.',
+      comentarios:'Requiere intervención del área social. Posible pérdida de cosecha.',
+      documentacion:'pendiente', credito:'adeudo' },
+
+    // P-005 — regular
+    { productorId:'P-005', fecha:daysAgo(4), tecnico:'Miguel Ángel Cruz', zona:'San Cristóbal',
+      labores:{ riego:'en-tiempo', fertilizacion:'destiempo', control_plagas:'destiempo',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'en-tiempo',
+                agroquimicos:'destiempo', control_biologico:'no-hecho' },
+      observaciones:'Productor mayor. Necesita apoyo en aplicación de control biológico.',
+      comentarios:'Buen ánimo pero limitaciones físicas. Candidato para grupo difusor.',
+      documentacion:'completa', credito:'al-corriente' },
+
+    // P-006 — todo bien
+    { productorId:'P-006', fecha:daysAgo(1), tecnico:'Miguel Ángel Cruz', zona:'San Cristóbal',
+      labores:{ riego:'en-tiempo', fertilizacion:'en-tiempo', control_plagas:'en-tiempo',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'en-tiempo',
+                agroquimicos:'en-tiempo', control_biologico:'destiempo' },
+      observaciones:'Productora muy organizada. Lleva registro propio de sus aplicaciones.',
+      comentarios:'Candidata ideal para Productoras Difusoras.',
+      documentacion:'completa', credito:'al-corriente' },
+
+    // P-007 — problemas
+    { productorId:'P-007', fecha:daysAgo(6), tecnico:'Patricia Vázquez', zona:'Independencia',
+      labores:{ riego:'no-hecho', fertilizacion:'destiempo', control_plagas:'no-hecho',
+                siembra:'en-tiempo', resiembra:'no-hecho', cachaza:'destiempo',
+                agroquimicos:'no-hecho', control_biologico:'no-hecho' },
+      observaciones:'Productor con problema de acceso al crédito. Parcela subutilizada.',
+      comentarios:'Necesita gestión urgente de crédito para insumos.',
+      documentacion:'incompleta', credito:'adeudo' },
+
+    // P-008 — buena productora
+    { productorId:'P-008', fecha:daysAgo(2), tecnico:'Patricia Vázquez', zona:'Independencia',
+      labores:{ riego:'en-tiempo', fertilizacion:'en-tiempo', control_plagas:'en-tiempo',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'destiempo',
+                agroquimicos:'en-tiempo', control_biologico:'en-tiempo' },
+      observaciones:'Excelente manejo de la parcela. Rendimiento histórico de 85 t/ha.',
+      comentarios:'Referente de la zona. Invitar a taller de Productoras Difusoras.',
+      documentacion:'completa', credito:'al-corriente' },
+
+    // P-009 — parcela grande, regular
+    { productorId:'P-009', fecha:daysAgo(3), tecnico:'Jorge Hernández', zona:'La Joya',
+      labores:{ riego:'destiempo', fertilizacion:'en-tiempo', control_plagas:'destiempo',
+                siembra:'en-tiempo', resiembra:'destiempo', cachaza:'en-tiempo',
+                agroquimicos:'destiempo', control_biologico:'no-hecho' },
+      observaciones:'Parcela de 7 ha con manejo irregular. Sistema de riego con fallas.',
+      comentarios:'Requiere revisión del sistema de riego. Coordinar con área técnica.',
+      documentacion:'completa', credito:'en-gestion' },
+
+    // P-010 — sin visita reciente, segunda visita hoy
+    { productorId:'P-010', fecha:daysAgo(0), tecnico:'Rosa López', zona:'La Gloria',
+      labores:{ riego:'en-tiempo', fertilizacion:'en-tiempo', control_plagas:'en-tiempo',
+                siembra:'en-tiempo', resiembra:'en-tiempo', cachaza:'en-tiempo',
+                agroquimicos:'en-tiempo', control_biologico:'en-tiempo' },
+      observaciones:'Primera visita de la zafra. Productora joven muy receptiva.',
+      comentarios:'Potencial alto. Incorporar al programa de capacitación digital.',
+      documentacion:'completa', credito:'al-corriente' },
+  ];
+
+  // Cargar productores demo
+  PRODS_DEMO.forEach(p => {
+    if(!productores.find(x=>x.id===p.id)) productores.push(p);
+  });
+  sv('gat_prod', productores);
+
+  // Cargar visitas demo
+  VISITAS_DEMO.forEach(v => {
+    const id = 'DEMO-' + v.productorId;
+    if(!visitas.find(x=>x.id===id)){
+      visitas.push({ id, ...v, ts: new Date(v.fecha+'T10:00:00').toISOString() });
+    }
+  });
+  sv('gat_vis', visitas);
+  populateSelect();
+}
+
+// ══════════════════════════════════════════
+// MÓDULO DE REPORTES
+// ══════════════════════════════════════════
+function renderReportes(){
+  const el = document.getElementById('reportes-contenido');
+  if(!el) return;
+
+  const hoy = new Date().toISOString().split('T')[0];
+  const semAnt = new Date(); semAnt.setDate(semAnt.getDate()-7);
+  const semStr = semAnt.toISOString().split('T')[0];
+  const mesAnt = new Date(); mesAnt.setDate(mesAnt.getDate()-30);
+  const mesStr = mesAnt.toISOString().split('T')[0];
+
+  // Técnicos únicos
+  const tecnicos = [...new Set(visitas.map(v=>v.tecnico).filter(Boolean))];
+  const zonas    = [...new Set(productores.map(p=>p.zona).filter(Boolean))];
+
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">Generar reporte</div>
+
+      <div class="field">
+        <label>Periodo</label>
+        <select id="rep-periodo" onchange="actualizarReporte()">
+          <option value="hoy">Hoy (${hoy})</option>
+          <option value="semana">Última semana</option>
+          <option value="mes">Último mes</option>
+          <option value="zafra" selected>Zafra completa</option>
+          <option value="custom">Rango personalizado</option>
+        </select>
+      </div>
+
+      <div id="rep-custom" style="display:none;">
+        <div class="row-2">
+          <div class="field"><label>Desde</label><input type="date" id="rep-desde" value="${semStr}" oninput="actualizarReporte()"></div>
+          <div class="field"><label>Hasta</label><input type="date" id="rep-hasta" value="${hoy}" oninput="actualizarReporte()"></div>
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Técnico</label>
+          <select id="rep-tecnico" onchange="actualizarReporte()">
+            <option value="">Todos</option>
+            ${tecnicos.map(t=>`<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Zona</label>
+          <select id="rep-zona" onchange="actualizarReporte()">
+            <option value="">Todas</option>
+            ${zonas.map(z=>`<option value="${z}">${z}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN DEL REPORTE -->
+    <div id="rep-resultado"></div>
+
+    <!-- TABLA DETALLE -->
+    <div class="card" id="rep-tabla-card" style="display:none;">
+      <div class="card-title">Detalle de visitas</div>
+      <div id="rep-tabla" style="overflow-x:auto;"></div>
+      <button class="btn btn-primary" style="margin-top:12px;" onclick="exportarCSV()">
+        ⬇️ Descargar CSV (Excel)
+      </button>
+    </div>
+  `;
+
+  // Iniciar listener en periodo
+  document.getElementById('rep-periodo').addEventListener('change', function(){
+    document.getElementById('rep-custom').style.display = this.value==='custom'?'block':'none';
+    actualizarReporte();
+  });
+
+  actualizarReporte();
+}
+
+function getFiltradoReporte(){
+  const periodo = document.getElementById('rep-periodo')?.value || 'zafra';
+  const tecnico = document.getElementById('rep-tecnico')?.value || '';
+  const zona    = document.getElementById('rep-zona')?.value || '';
+  const hoy     = new Date().toISOString().split('T')[0];
+
+  let desde='', hasta=hoy;
+  if(periodo==='hoy'){ desde=hoy; }
+  else if(periodo==='semana'){ const d=new Date(); d.setDate(d.getDate()-7); desde=d.toISOString().split('T')[0]; }
+  else if(periodo==='mes'){ const d=new Date(); d.setDate(d.getDate()-30); desde=d.toISOString().split('T')[0]; }
+  else if(periodo==='custom'){
+    desde = document.getElementById('rep-desde')?.value||'';
+    hasta = document.getElementById('rep-hasta')?.value||hoy;
+  }
+
+  let filtV = visitas.filter(v=>{
+    if(desde && v.fecha < desde) return false;
+    if(hasta && v.fecha > hasta) return false;
+    if(tecnico && v.tecnico !== tecnico) return false;
+    if(zona){
+      const p = productores.find(x=>x.id===v.productorId);
+      if(!p || p.zona!==zona) return false;
+    }
+    return true;
+  });
+  return { filtV, desde, hasta, periodo };
+}
+
+function actualizarReporte(){
+  const { filtV, desde, hasta } = getFiltradoReporte();
+  const res = document.getElementById('rep-resultado');
+  const tabCard = document.getElementById('rep-tabla-card');
+  if(!res) return;
+
+  const totalVisitas = filtV.length;
+  const prodsVisitados = [...new Set(filtV.map(v=>v.productorId))].length;
+  const tecnicosActivos = [...new Set(filtV.map(v=>v.tecnico).filter(Boolean))].length;
+
+  // Conteos de labores
+  const laborOk={}, laborBad={};
+  LABORES.forEach(l=>{ laborOk[l.key]=0; laborBad[l.key]=0; });
+  filtV.forEach(v=>{
+    LABORES.forEach(l=>{
+      if(v.labores?.[l.key]==='en-tiempo') laborOk[l.key]++;
+      if(v.labores?.[l.key]==='no-hecho')  laborBad[l.key]++;
+    });
+  });
+
+  // Labor más cumplida y más rezagada
+  const mejorLabor = LABORES.reduce((a,b)=>laborOk[a.key]>laborOk[b.key]?a:b, LABORES[0]);
+  const peorLabor  = LABORES.reduce((a,b)=>laborBad[a.key]>laborBad[b.key]?a:b, LABORES[0]);
+
+  res.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div class="kpi-box"><div class="kpi-num" style="color:var(--verde)">${totalVisitas}</div><div class="kpi-lbl">Visitas</div></div>
+      <div class="kpi-box"><div class="kpi-num" style="color:var(--azul)">${prodsVisitados}</div><div class="kpi-lbl">Productores</div></div>
+      <div class="kpi-box"><div class="kpi-num" style="color:var(--caña)">${tecnicosActivos}</div><div class="kpi-lbl">Técnicos</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Cumplimiento de labores en el periodo</div>
+      ${LABORES.map(l=>{
+        const ok=laborOk[l.key], bad=laborBad[l.key];
+        const tot=ok+bad; if(!tot) return '';
+        const pct=Math.round(ok/tot*100);
+        const color=pct>=80?'var(--verde)':pct>=50?'var(--amarillo)':'var(--rojo)';
+        return `<div style="margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:2px;">
+            <span>${l.label}</span><span style="color:${color}">${pct}% en tiempo</span>
+          </div>
+          <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;">
+            <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;"></div>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:10px;font-size:12px;color:#666;">
+        ✅ Mejor cumplimiento: <strong>${mejorLabor?.label}</strong> &nbsp;|&nbsp;
+        🔴 Mayor rezago: <strong>${peorLabor?.label}</strong>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px;">
+      <div class="card-title">Visitas por técnico</div>
+      ${[...new Set(filtV.map(v=>v.tecnico).filter(Boolean))].map(tec=>{
+        const n=filtV.filter(v=>v.tecnico===tec).length;
+        const pct=Math.round(n/totalVisitas*100);
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f5f5f5;font-size:13px;">
+          <span><strong>${tec}</strong></span>
+          <span>${n} visitas <span style="color:#888;font-size:11px;">(${pct}%)</span></span>
+        </div>`;
+      }).join('') || '<div style="color:#bbb;text-align:center;padding:12px;">Sin datos</div>'}
+    </div>`;
+
+  // Tabla detalle
+  if(filtV.length){
+    tabCard.style.display='block';
+    const rows = [...filtV].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    document.getElementById('rep-tabla').innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px;">
+        <thead>
+          <tr style="background:var(--verde-l);">
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Fecha</th>
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Técnico</th>
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Productor</th>
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Zona</th>
+            <th style="padding:7px 8px;text-align:center;font-weight:800;color:var(--verde-d);">✅</th>
+            <th style="padding:7px 8px;text-align:center;font-weight:800;color:var(--verde-d);">⚠️</th>
+            <th style="padding:7px 8px;text-align:center;font-weight:800;color:var(--verde-d);">🔴</th>
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Docs</th>
+            <th style="padding:7px 8px;text-align:left;font-weight:800;color:var(--verde-d);">Crédito</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((v,i)=>{
+            const p=productores.find(x=>x.id===v.productorId);
+            const ok=Object.values(v.labores||{}).filter(x=>x==='en-tiempo').length;
+            const warn=Object.values(v.labores||{}).filter(x=>x==='destiempo').length;
+            const bad=Object.values(v.labores||{}).filter(x=>x==='no-hecho').length;
+            return `<tr style="background:${i%2?'#fafafa':'#fff'};">
+              <td style="padding:7px 8px;">${v.fecha}</td>
+              <td style="padding:7px 8px;">${v.tecnico||'N/D'}</td>
+              <td style="padding:7px 8px;font-weight:600;">${p?p.nombre:v.productorId}</td>
+              <td style="padding:7px 8px;">${p?.zona||''}</td>
+              <td style="padding:7px 8px;text-align:center;color:#1a6b2e;font-weight:800;">${ok}</td>
+              <td style="padding:7px 8px;text-align:center;color:#856404;font-weight:800;">${warn}</td>
+              <td style="padding:7px 8px;text-align:center;color:#842029;font-weight:800;">${bad}</td>
+              <td style="padding:7px 8px;">${v.documentacion||'N/D'}</td>
+              <td style="padding:7px 8px;">${v.credito||'N/D'}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  } else {
+    tabCard.style.display='none';
+  }
+}
+
+// Exportar a CSV
+function exportarCSV(){
+  const { filtV } = getFiltradoReporte();
+  const rows=[['Fecha','Técnico','ID Productor','Productor','Zona','Ha','Riego','Fertilización','Control Plagas','Siembra','Resiembra','Cachaza','Agroquímicos','Control Biológico','Documentación','Crédito','Observaciones','Comentarios']];
+  filtV.sort((a,b)=>b.fecha.localeCompare(a.fecha)).forEach(v=>{
+    const p=productores.find(x=>x.id===v.productorId);
+    const l=v.labores||{};
+    rows.push([
+      v.fecha, v.tecnico||'', v.productorId, p?.nombre||'', p?.zona||'', p?.ha||'',
+      l.riego||'', l.fertilizacion||'', l.control_plagas||'',
+      l.siembra||'', l.resiembra||'', l.cachaza||'',
+      l.agroquimicos||'', l.control_biologico||'',
+      v.documentacion||'', v.credito||'',
+      (v.observaciones||'').replace(/,/g,';'), (v.comentarios||'').replace(/,/g,';')
+    ]);
+  });
+  const csv = rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`GAT_Reporte_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('✅ CSV descargado');
+}
+
+
+// ══════════════════════════════════════════
+// BÚSQUEDA DE PRODUCTOR POR ID
+// ══════════════════════════════════════════
+function buscarProductorPorId(){
+  const query = document.getElementById('id-busqueda').value.trim().toUpperCase();
+  if(!query){ showToast('⚠️ Escribe el ID del productor'); return; }
+
+  // Buscar en padrón local
+  const p = productores.find(x =>
+    x.id.toUpperCase()===query ||
+    x.id.toUpperCase().includes(query) ||
+    query.includes(x.id.toUpperCase())
+  );
+
+  if(!p){ showToast('❌ Productor no encontrado. Verifica el ID.'); return; }
+
+  // Mostrar card del productor encontrado
+  const div = document.getElementById('info-productor');
+  div.style.display = 'block';
+  const initials = p.nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  div.innerHTML = `
+    <div class="prod-found-card">
+      <div class="prod-found-avatar">${initials}</div>
+      <div style="flex:1;">
+        <div style="font-weight:800;font-size:15px;">${p.nombre}</div>
+        <div style="font-size:12px;color:#555;margin-top:2px;">
+          ID: <strong>${p.id}</strong> · ${p.zona||''} · ${p.ejido||''}
+        </div>
+        <div style="font-size:12px;color:#555;">
+          ${p.ha||'?'} ha · ${p.edad||'?'} años · Tel: ${p.tel||p.telefono||'N/D'}
+        </div>
+      </div>
+      <div style="font-size:24px;">✅</div>
+    </div>`;
+
+  // Setear en select oculto para compatibilidad
+  const sel = document.getElementById('sel-productor');
+  let opt = sel.querySelector(`option[value="${p.id}"]`);
+  if(!opt){ opt=document.createElement('option'); opt.value=p.id; opt.text=p.nombre; sel.appendChild(opt); }
+  sel.value = p.id;
+
+  showToast(`✅ ${p.nombre} encontrado`);
+  guardarBorradorAuto();
+}
+
+// ══════════════════════════════════════════
+// BORRADOR / GUARDADO PARCIAL AUTOMÁTICO
+// ══════════════════════════════════════════
+let autoSaveTimer = null;
+
+function guardarBorradorAuto(){
+  clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(()=>{
+    const borrador = {
+      productorId: document.getElementById('sel-productor')?.value || '',
+      idBusqueda:  document.getElementById('id-busqueda')?.value || '',
+      fecha:       document.getElementById('fecha-visita')?.value || '',
+      tecnico:     document.getElementById('tec-nombre')?.value || '',
+      zona:        document.getElementById('tec-zona')?.value || '',
+      labores:     getLaborValues(),
+      observaciones: document.getElementById('observaciones')?.value || '',
+      comentarios:   document.getElementById('comentarios')?.value || '',
+      documentacion: document.getElementById('documentacion')?.value || '',
+      credito:       document.getElementById('credito')?.value || '',
+      ts: new Date().toISOString(),
+    };
+    if(borrador.productorId || borrador.observaciones || Object.values(borrador.labores).some(v=>v)){
+      sv('gat_borrador', borrador);
+      document.getElementById('draft-bar').style.display='flex';
+    }
+  }, 2000);
+}
+
+function cargarBorrador(){
+  const b = ld('gat_borrador', null);
+  if(!b) return;
+  if(b.idBusqueda) document.getElementById('id-busqueda').value = b.idBusqueda;
+  if(b.productorId){
+    const sel=document.getElementById('sel-productor');
+    let opt=sel.querySelector(`option[value="${b.productorId}"]`);
+    if(!opt){ opt=document.createElement('option'); opt.value=b.productorId; sel.appendChild(opt); }
+    sel.value=b.productorId;
+    buscarProductorPorId();
+  }
+  if(b.fecha) document.getElementById('fecha-visita').value=b.fecha;
+  if(b.observaciones) document.getElementById('observaciones').value=b.observaciones;
+  if(b.comentarios) document.getElementById('comentarios').value=b.comentarios;
+  if(b.documentacion) document.getElementById('documentacion').value=b.documentacion;
+  if(b.credito) document.getElementById('credito').value=b.credito;
+  if(b.labores) LABORES.forEach(l=>{
+    const sel=document.querySelector(`#lr-${l.key} select`);
+    if(sel && b.labores[l.key]){ sel.value=b.labores[l.key]; onLaborChange(l.key,sel); }
+  });
+  document.getElementById('draft-bar').style.display='none';
+  showToast('✅ Borrador restaurado');
+}
+
+function limpiarBorrador(){
+  localStorage.removeItem('gat_borrador');
+  document.getElementById('draft-bar').style.display='none';
+}
+
+// Auto-guardar en cada cambio de labor
+document.addEventListener('change', e=>{
+  if(e.target.closest('#labores-grid') || e.target.id==='observaciones' || e.target.id==='comentarios'){
+    guardarBorradorAuto();
+  }
+});
+
+// ══════════════════════════════════════════
+// VIDEO
+// ══════════════════════════════════════════
+let videos_b64 = [];
+
+function onVideo(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 50*1024*1024){ showToast('⚠️ Video máximo 50 MB'); return; }
+  const url = URL.createObjectURL(file);
+  videos_b64.push({ url, name:file.name, size:file.size });
+  renderMediaGrid();
+  e.target.value='';
+  showToast('🎥 Video agregado (se guarda localmente)');
+}
+
+function renderMediaGrid(){
+  const grid = document.getElementById('media-grid');
+  const fotos = fotos_b64.map((src,i)=>`
+    <div style="position:relative;">
+      <img src="${src}" class="foto-thumb" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;border:2px solid #ddd;">
+      <button onclick="removeFoto(${i})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;">✕</button>
+    </div>`).join('');
+  const vids = videos_b64.map((v,i)=>`
+    <div style="position:relative;">
+      <div class="media-thumb">🎥</div>
+      <div style="font-size:9px;text-align:center;color:#888;margin-top:2px;">${(v.size/1024/1024).toFixed(1)}MB</div>
+      <button onclick="removeVideo(${i})" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;">✕</button>
+    </div>`).join('');
+  const adds = (fotos_b64.length+videos_b64.length) < 4 ? `
+    <div class="media-add" onclick="document.getElementById('foto-input').click()">
+      <span>📷</span><span>Foto</span>
+    </div>
+    <div class="media-add" onclick="document.getElementById('video-input').click()">
+      <span>🎥</span><span>Video</span>
+    </div>` : '';
+  grid.innerHTML = fotos + vids + adds;
+}
+
+function removeVideo(i){ videos_b64.splice(i,1); renderMediaGrid(); }
+
+// ══════════════════════════════════════════
+// ANOTACIÓN EN PARCELA (CANVAS)
+// ══════════════════════════════════════════
+let anotCanvas, anotCtx, anotDrawing=false, anotLastX=0, anotLastY=0;
+let anotColor = '#c62828'; // rojo por defecto
+let anotData  = null;
+
+function initAnotCanvas(){
+  anotCanvas = document.getElementById('anotacion-canvas');
+  if(!anotCanvas) return;
+  anotCtx = anotCanvas.getContext('2d');
+
+  function resize(){
+    const rect = anotCanvas.getBoundingClientRect();
+    const dpr  = window.devicePixelRatio||1;
+    anotCanvas.width  = rect.width  * dpr;
+    anotCanvas.height = rect.height * dpr;
+    anotCtx.scale(dpr,dpr);
+    anotCtx.strokeStyle=anotColor; anotCtx.lineWidth=3;
+    anotCtx.lineCap='round'; anotCtx.lineJoin='round';
+    drawParcelaBase();
+  }
+  resize();
+
+  anotCanvas.addEventListener('pointerdown', e=>{
+    anotDrawing=true;
+    const p=getAnotPos(e); anotLastX=p.x; anotLastY=p.y;
+    anotCanvas.classList.add('tiene-nota');
+    document.getElementById('anot-status').textContent='✅ Anotación capturada';
+  });
+  anotCanvas.addEventListener('pointermove', e=>{
+    if(!anotDrawing) return;
+    const p=getAnotPos(e);
+    anotCtx.beginPath();
+    anotCtx.strokeStyle=anotColor; anotCtx.lineWidth=3;
+    anotCtx.moveTo(anotLastX,anotLastY); anotCtx.lineTo(p.x,p.y); anotCtx.stroke();
+    anotLastX=p.x; anotLastY=p.y;
+  });
+  anotCanvas.addEventListener('pointerup',   ()=>{ anotDrawing=false; anotData=anotCanvas.toDataURL(); guardarBorradorAuto(); });
+  anotCanvas.addEventListener('pointerleave',()=>{ anotDrawing=false; });
+}
+
+function drawParcelaBase(){
+  if(!anotCtx) return;
+  const w = anotCanvas.getBoundingClientRect().width;
+  const h = anotCanvas.getBoundingClientRect().height;
+  // Fondo campo
+  anotCtx.fillStyle='#e8f5d6'; anotCtx.fillRect(0,0,w,h);
+  // Polígono parcela simulado
+  anotCtx.strokeStyle='#4a8a10'; anotCtx.lineWidth=2; anotCtx.setLineDash([]);
+  anotCtx.beginPath();
+  anotCtx.moveTo(w*.15,h*.2); anotCtx.lineTo(w*.85,h*.15);
+  anotCtx.lineTo(w*.88,h*.8); anotCtx.lineTo(w*.12,h*.82);
+  anotCtx.closePath(); anotCtx.stroke();
+  // Etiqueta
+  anotCtx.fillStyle='#4a8a10'; anotCtx.font='bold 11px Arial';
+  anotCtx.fillText('Parcela',w*.38,h*.5);
+  anotCtx.fillStyle='#999'; anotCtx.font='9px Arial';
+  anotCtx.fillText('Dibuja aquí para marcar zonas',w*.22,h*.92);
+}
+
+function getAnotPos(e){
+  const rect=anotCanvas.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  return { x:src.clientX-rect.left, y:src.clientY-rect.top };
+}
+
+function setTool(color, btn){
+  const colors={ rojo:'#c62828', azul:'#1565c0', amarillo:'#f9a825', verde:'#6AAF28' };
+  anotColor = colors[color]||'#c62828';
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function limpiarAnotacion(){
+  if(!anotCtx) return;
+  const rect=anotCanvas.getBoundingClientRect();
+  anotCtx.clearRect(0,0,rect.width,rect.height);
+  drawParcelaBase();
+  anotCanvas.classList.remove('tiene-nota');
+  anotData=null;
+  document.getElementById('anot-status').textContent='';
+}
+
+// ══════════════════════════════════════════
+// CARGA MASIVA DE PADRÓN CSV
+// ══════════════════════════════════════════
+function renderCargaPadron(){
+  const el=document.getElementById('admin-contenido');
+  if(!el) return;
+
+  // Agregar sección de carga al principio
+  const uploadSection = `
+    <div class="card" style="border:2px solid var(--verde);margin-bottom:14px;">
+      <div class="card-title">📤 Cargar padrón masivo (CSV / Excel)</div>
+      <p style="font-size:12px;color:#666;margin-bottom:12px;">
+        Sube el archivo CSV con todos tus productores. La app los carga automáticamente.<br>
+        <strong>Descarga la plantilla Excel</strong> para ver el formato correcto.
+      </p>
+      <div class="upload-drop" onclick="document.getElementById('csv-input').click()">
+        <div class="ico">📂</div>
+        <p>Toca aquí para seleccionar el archivo CSV del padrón</p>
+        <p style="font-size:10px;color:#999;margin-top:4px;">Formato: GAT_Plantilla_Padron.csv</p>
+      </div>
+      <input type="file" id="csv-input" accept=".csv,.txt" style="display:none" onchange="procesarCSV(event)">
+      <div id="csv-resultado" style="margin-top:10px;font-size:13px;"></div>
+    </div>`;
+
+  el.innerHTML = uploadSection + el.innerHTML;
+}
+
+async function procesarCSV(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const res = document.getElementById('csv-resultado');
+  res.innerHTML = '⏳ Procesando...';
+
+  const text = await file.text();
+  const lines = text.split('\n').filter(l=>l.trim());
+
+  // Detectar encabezados (primera línea)
+  const sep = lines[0].includes(',') ? ',' : ';';
+  const headers = lines[0].split(sep).map(h=>h.replace(/"/g,'').trim().toLowerCase());
+
+  // Mapear columnas
+  const idx = {
+    id:     headers.findIndex(h=>h.includes('id')||h.includes('clave')||h.includes('productor')),
+    nombre: headers.findIndex(h=>h.includes('nombre')),
+    edad:   headers.findIndex(h=>h.includes('edad')),
+    zona:   headers.findIndex(h=>h.includes('zona')||h.includes('ingenio')),
+    ejido:  headers.findIndex(h=>h.includes('ejido')||h.includes('localidad')),
+    ha:     headers.findIndex(h=>h.includes('ha')||h.includes('superficie')||h.includes('hectar')),
+    tel:    headers.findIndex(h=>h.includes('tel')||h.includes('phone')),
+    curp:   headers.findIndex(h=>h.includes('curp')),
+    ine:    headers.findIndex(h=>h.includes('ine')||h.includes('credencial')||h.includes('folio')),
+    lat:    headers.findIndex(h=>h.includes('lat')),
+    lon:    headers.findIndex(h=>h.includes('lon')||h.includes('lng')),
+  };
+
+  let nuevos=0, actualizados=0, errores=[];
+  const procesados = [];
+
+  for(let i=1; i<lines.length; i++){
+    const cols = lines[i].split(sep).map(c=>c.replace(/"/g,'').trim());
+    if(cols.length < 2 || !cols[idx.id>-1?idx.id:0]) continue;
+
+    const pid = cols[idx.id>-1?idx.id:0];
+    if(!pid) continue;
+
+    const prod = {
+      id:     pid,
+      nombre: idx.nombre>-1 ? cols[idx.nombre] : '',
+      edad:   idx.edad>-1   ? cols[idx.edad]   : '',
+      zona:   idx.zona>-1   ? cols[idx.zona]   : '',
+      ejido:  idx.ejido>-1  ? cols[idx.ejido]  : '',
+      ha:     idx.ha>-1     ? cols[idx.ha]     : '',
+      tel:    idx.tel>-1    ? cols[idx.tel]    : '',
+      curp:   idx.curp>-1   ? cols[idx.curp]   : '',
+      ine:    idx.ine>-1    ? cols[idx.ine]    : '',
+      lat:    idx.lat>-1    ? cols[idx.lat]    : '',
+      lon:    idx.lon>-1    ? cols[idx.lon]    : '',
+    };
+
+    if(!prod.nombre){ errores.push(`Fila ${i+1}: sin nombre`); continue; }
+
+    const existing = productores.findIndex(p=>p.id===pid);
+    if(existing>-1){ productores[existing]={...productores[existing],...prod}; actualizados++; }
+    else            { productores.push(prod); nuevos++; }
+    procesados.push(prod);
+  }
+
+  sv('gat_prod', productores);
+  populateSelect();
+
+  // Subir a Firebase
+  if(isFirebaseReady && navigator.onLine && _db){
+    res.innerHTML='⏳ Subiendo a la nube...';
+    for(const p of procesados){
+      await _db.collection('productores').doc(p.id).set(p);
+    }
+  }
+
+  res.innerHTML=`
+    <div style="background:#d4edda;border-radius:7px;padding:10px;color:#1a6b2e;">
+      ✅ <strong>${nuevos} productores nuevos</strong> · ${actualizados} actualizados
+      ${errores.length?`<br>⚠️ ${errores.length} filas con error`:''}
+    </div>`;
+
+  showToast(`✅ ${nuevos+actualizados} productores cargados`);
+  e.target.value='';
+}
+
 </script>
 </body>
 </html>
