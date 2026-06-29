@@ -1856,17 +1856,24 @@ function setLoginRole(role, el){
 }
 
 function doLogin(){
-  const codigo = document.getElementById('login-codigo').value.trim().toUpperCase();
-  const pin    = document.getElementById('login-pin').value.trim();
+  const codigo = (document.getElementById('login-codigo').value||'').trim().toUpperCase();
+  const pin    = (document.getElementById('login-pin').value||'').trim().replace(/\D/g,'');
   const error  = document.getElementById('login-error');
 
-  if(!codigo || !pin){ error.textContent='Ingresa tu código y PIN'; return; }
+  if(!codigo){ error.textContent='Ingresa tu código de técnico'; return; }
+  if(!pin)   { error.textContent='Ingresa tu PIN de 4 dígitos'; return; }
 
   const tecnicos = getTecnicos();
-  const tec = tecnicos.find(t=>t.codigo===codigo && t.pin===pin);
+  const tec = tecnicos.find(t=>
+    t.codigo.toString().toUpperCase()===codigo &&
+    t.pin.toString()===pin
+  );
 
-  if(!tec){ error.textContent='Código o PIN incorrecto'; return; }
-  if(!tec.activo){ error.textContent='Tu acceso está desactivado. Contacta al supervisor.'; return; }
+  if(!tec){
+    error.textContent='Código o PIN incorrecto. Verifica con tu supervisor.';
+    return;
+  }
+  if(!tec.activo){ error.textContent='Tu acceso está desactivado.'; return; }
 
   sesionActual = { codigo:tec.codigo, nombre:tec.nombre, zona:tec.zona, rol:'tecnico' };
   entrar();
