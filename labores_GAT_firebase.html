@@ -537,7 +537,7 @@ textarea{ min-height:65px; resize:vertical; }
     <div id="login-tecnico-form">
       <div class="login-field">
         <label>Tu contraseña</label>
-        <input type="password" id="login-pass-tec" placeholder="••••••••"
+        <input type="password" id="login-pass-tec" placeholder="tecnico"
                onkeydown="if(event.key==='Enter') doLogin()">
       </div>
       <button class="btn-login" onclick="doLogin()">Entrar →</button>
@@ -1823,11 +1823,11 @@ setTimeout(flushQueue, 2000);
 
 // Técnicos pre-cargados (el jefe puede agregar más desde la app)
 const TECNICOS_DEFAULT = [
-  { codigo:'TECH01', pin:'campo1', nombre:'Carlos Mendoza',   zona:'La Joya',       activo:true },
-  { codigo:'TECH02', pin:'campo2', nombre:'Rosa López',        zona:'La Gloria',     activo:true },
-  { codigo:'TECH03', pin:'campo3', nombre:'Miguel Ángel Cruz', zona:'San Cristóbal', activo:true },
-  { codigo:'TECH04', pin:'campo4', nombre:'Patricia Vázquez',  zona:'Independencia', activo:true },
-  { codigo:'TECH05', pin:'campo5', nombre:'Jorge Hernández',   zona:'La Joya',       activo:true },
+  { codigo:'TECH01', pin:'tecnico', nombre:'Carlos Mendoza',   zona:'La Joya',       activo:true },
+  { codigo:'TECH02', pin:'tecnico', nombre:'Rosa López',        zona:'La Gloria',     activo:true },
+  { codigo:'TECH03', pin:'tecnico', nombre:'Miguel Ángel Cruz', zona:'San Cristóbal', activo:true },
+  { codigo:'TECH04', pin:'tecnico', nombre:'Patricia Vázquez',  zona:'Independencia', activo:true },
+  { codigo:'TECH05', pin:'tecnico', nombre:'Jorge Hernández',   zona:'La Joya',       activo:true },
 ];
 const JEFE_PASSWORD = 'GAT2026jefe'; // Cámbiala desde el panel de administración
 
