@@ -536,14 +536,9 @@ textarea{ min-height:65px; resize:vertical; }
     <!-- TÉCNICO -->
     <div id="login-tecnico-form">
       <div class="login-field">
-        <label>Tu código de técnico</label>
-        <input type="text" id="login-codigo" placeholder="TECH01" maxlength="8"
-               style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
-      </div>
-      <div class="login-field">
-        <label>PIN (4 dígitos)</label>
-        <input type="password" id="login-pin" placeholder="••••" maxlength="4"
-               inputmode="numeric" onkeydown="if(event.key==='Enter') doLogin()">
+        <label>Tu contraseña</label>
+        <input type="password" id="login-pass-tec" placeholder="••••••••"
+               onkeydown="if(event.key==='Enter') doLogin()">
       </div>
       <button class="btn-login" onclick="doLogin()">Entrar →</button>
     </div>
@@ -1828,11 +1823,11 @@ setTimeout(flushQueue, 2000);
 
 // Técnicos pre-cargados (el jefe puede agregar más desde la app)
 const TECNICOS_DEFAULT = [
-  { codigo:'TECH01', pin:'1234', nombre:'Carlos Mendoza',  zona:'La Joya',       activo:true },
-  { codigo:'TECH02', pin:'2345', nombre:'Rosa López',       zona:'La Gloria',     activo:true },
-  { codigo:'TECH03', pin:'3456', nombre:'Miguel Ángel Cruz',zona:'San Cristóbal', activo:true },
-  { codigo:'TECH04', pin:'4567', nombre:'Patricia Vázquez', zona:'Independencia', activo:true },
-  { codigo:'TECH05', pin:'5678', nombre:'Jorge Hernández',  zona:'La Joya',       activo:true },
+  { codigo:'TECH01', pin:'campo1', nombre:'Carlos Mendoza',   zona:'La Joya',       activo:true },
+  { codigo:'TECH02', pin:'campo2', nombre:'Rosa López',        zona:'La Gloria',     activo:true },
+  { codigo:'TECH03', pin:'campo3', nombre:'Miguel Ángel Cruz', zona:'San Cristóbal', activo:true },
+  { codigo:'TECH04', pin:'campo4', nombre:'Patricia Vázquez',  zona:'Independencia', activo:true },
+  { codigo:'TECH05', pin:'campo5', nombre:'Jorge Hernández',   zona:'La Joya',       activo:true },
 ];
 const JEFE_PASSWORD = 'GAT2026jefe'; // Cámbiala desde el panel de administración
 
@@ -1856,24 +1851,18 @@ function setLoginRole(role, el){
 }
 
 function doLogin(){
-  const codigo = (document.getElementById('login-codigo').value||'').trim().toUpperCase();
-  const pin    = (document.getElementById('login-pin').value||'').trim().replace(/\D/g,'');
-  const error  = document.getElementById('login-error');
+  const pass  = (document.getElementById('login-pass-tec').value||'').trim();
+  const error = document.getElementById('login-error');
 
-  if(!codigo){ error.textContent='Ingresa tu código de técnico'; return; }
-  if(!pin)   { error.textContent='Ingresa tu PIN de 4 dígitos'; return; }
+  if(!pass){ error.textContent='Ingresa tu contraseña'; return; }
 
   const tecnicos = getTecnicos();
-  const tec = tecnicos.find(t=>
-    t.codigo.toString().toUpperCase()===codigo &&
-    t.pin.toString()===pin
-  );
+  const tec = tecnicos.find(t => t.pin === pass && t.activo);
 
   if(!tec){
-    error.textContent='Código o PIN incorrecto. Verifica con tu supervisor.';
+    error.textContent='Contraseña incorrecta. Verifica con tu supervisor.';
     return;
   }
-  if(!tec.activo){ error.textContent='Tu acceso está desactivado.'; return; }
 
   sesionActual = { codigo:tec.codigo, nombre:tec.nombre, zona:tec.zona, rol:'tecnico' };
   entrar();
