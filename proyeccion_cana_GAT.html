@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GAT · Proyección de Caña</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --verde:    #6AAF28;
+  --verde-d:  #4a8a10;
+  --verde-l:  #e8f5d6;
+  --caña:     #c8a84b;
+  --caña-l:   #fdf6e3;
+  --caña-d:   #8a6a10;
+  --tierra:   #7a5230;
+  --gris-f:   #2d2d2d;
+  --gris-m:   #666;
+  --gris-l:   #f2f3f0;
+  --blanco:   #fafaf8;
+  --rojo:     #c62828;
+  --amarillo: #f9a825;
+  --azul:     #1565c0;
+  --radio:    10px;
+  --sombra:   0 2px 10px rgba(0,0,0,.10);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--gris-l); color:var(--gris-f);
+  min-height:100vh; font-size:15px;
+}
+
+/* HEADER */
+header{
+  background:linear-gradient(135deg,var(--caña-d) 0%,var(--caña) 100%);
+  color:#fff; padding:14px 16px 14px;
+  box-shadow:0 2px 12px rgba(138,106,16,.35);
+}
+.h-top{ display:flex; align-items:center; justify-content:space-between; }
+.h-brand{ font-size:10px; font-weight:800; letter-spacing:2px; opacity:.8; }
+.h-title{ font-size:17px; font-weight:900; letter-spacing:.3px; }
+.h-sub{ font-size:11px; opacity:.75; margin-top:2px; text-align:right; }
+
+/* TABS */
+.tabs{
+  display:flex; background:#fff; border-bottom:2px solid #eee;
+  position:sticky; top:0; z-index:100; box-shadow:0 1px 4px rgba(0,0,0,.07);
+}
+.tab{
+  flex:1; padding:11px 4px; text-align:center; font-size:12px; font-weight:700;
+  color:#aaa; cursor:pointer; border-bottom:3px solid transparent;
+  transition:all .2s; text-transform:uppercase; letter-spacing:.3px;
+}
+.tab.active{ color:var(--caña-d); border-bottom-color:var(--caña); }
+
+/* VIEWS */
+.view{ display:none; padding:14px 14px 80px; }
+.view.active{ display:block; }
+
+/* CARD */
+.card{ background:#fff; border-radius:var(--radio); padding:14px; margin-bottom:12px; box-shadow:var(--sombra); }
+.card-title{
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px;
+  color:var(--caña-d); margin-bottom:12px;
+  display:flex; align-items:center; gap:6px;
+}
+.card-title::before{ content:''; display:inline-block; width:3px; height:14px; background:var(--caña); border-radius:2px; }
+
+/* FORM */
+.field{ margin-bottom:11px; }
+label{ display:block; font-size:11px; font-weight:700; color:#777; margin-bottom:3px; text-transform:uppercase; letter-spacing:.5px; }
+input,select{ width:100%; border:1.5px solid #ddd; border-radius:8px; padding:9px 12px; font-size:14px; font-family:inherit; color:var(--gris-f); background:#fff; transition:border-color .2s; -webkit-appearance:none; }
+input:focus,select:focus{ outline:none; border-color:var(--caña); }
+.row-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* BOTONES */
+.btn{ display:block; width:100%; padding:13px; border:none; border-radius:9px; font-size:15px; font-weight:800; cursor:pointer; text-align:center; transition:all .18s; }
+.btn-primary{ background:var(--caña); color:#fff; }
+.btn-primary:active{ background:var(--caña-d); }
+.btn-verde{ background:var(--verde); color:#fff; }
+.btn-sm{ display:inline-block; width:auto; padding:7px 14px; font-size:12px; border-radius:7px; }
+.btn-outline{ background:#fff; color:var(--caña-d); border:2px solid var(--caña); margin-top:8px; }
+
+/* RESULTADO PROYECCIÓN */
+.proy-hero{
+  border-radius:12px; padding:20px;
+  background:linear-gradient(135deg,var(--verde-d),var(--verde));
+  color:#fff; text-align:center; margin-bottom:12px;
+}
+.proy-num{ font-size:48px; font-weight:900; line-height:1; }
+.proy-unit{ font-size:14px; opacity:.85; margin-top:2px; }
+.proy-label{ font-size:12px; opacity:.7; margin-top:4px; text-transform:uppercase; letter-spacing:1px; }
+
+.proy-rango{
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;
+}
+.rango-box{
+  border-radius:9px; padding:12px; text-align:center;
+}
+.rango-box.pesimista{ background:#fff3e0; }
+.rango-box.optimista{ background:var(--verde-l); }
+.rango-num{ font-size:22px; font-weight:900; }
+.rango-lbl{ font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.5px; }
+
+/* FACTORES */
+.factor-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 0; border-bottom:1px solid #f0f0f0; font-size:13px;
+}
+.factor-row:last-child{ border-bottom:none; }
+.factor-name{ flex:1; font-weight:600; }
+.factor-val{
+  font-size:15px; font-weight:900; min-width:50px; text-align:right;
+}
+.factor-bar{
+  height:6px; border-radius:4px; background:#eee;
+  margin-top:3px; overflow:hidden;
+}
+.factor-fill{ height:100%; border-radius:4px; transition:width .5s; }
+
+/* TABLA PRODUCTORES */
+.prod-row{
+  display:grid; grid-template-columns:1fr auto auto auto;
+  gap:8px; align-items:center; padding:10px 0;
+  border-bottom:1px solid #f0f0f0; font-size:13px;
+}
+.prod-row:last-child{ border-bottom:none; }
+.prod-row-header{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:#aaa; }
+.proy-chip{
+  padding:4px 10px; border-radius:20px; font-size:12px; font-weight:800;
+  white-space:nowrap; text-align:center;
+}
+.chip-bien   { background:var(--verde-l); color:var(--verde-d); }
+.chip-regular{ background:#fff3cd; color:#856404; }
+.chip-mal    { background:#fdecea; color:var(--rojo); }
+
+/* STAT GRID */
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+.stat-box{ background:#fff; border-radius:var(--radio); padding:12px 8px; text-align:center; box-shadow:var(--sombra); }
+.stat-num{ font-size:24px; font-weight:900; line-height:1; }
+.stat-lbl{ font-size:9px; color:#888; margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* ZONA FILTER */
+.zona-pill{
+  display:inline-block; padding:3px 12px; border-radius:20px; font-size:11px;
+  font-weight:800; text-transform:uppercase; letter-spacing:.8px;
+  background:var(--caña-l); color:var(--caña-d); cursor:pointer; border:2px solid transparent;
+}
+.zona-pill.active{ border-color:var(--caña); background:var(--caña); color:#fff; }
+.zonas-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+
+/* SEMÁFORO ABASTO */
+.abasto-bar{
+  height:28px; border-radius:8px; background:#eee;
+  overflow:hidden; margin:8px 0; position:relative;
+}
+.abasto-fill{
+  height:100%; border-radius:8px;
+  display:flex; align-items:center; justify-content:flex-end;
+  padding-right:10px; color:#fff; font-size:13px; font-weight:800;
+  transition:width .8s cubic-bezier(.22,.61,.36,1);
+}
+.abasto-meta{
+  position:absolute; top:0; bottom:0;
+  border-left:2px dashed rgba(0,0,0,.25);
+  display:flex; align-items:center;
+}
+.abasto-meta-lbl{
+  font-size:9px; font-weight:800; color:rgba(0,0,0,.4);
+  text-transform:uppercase; margin-left:4px; white-space:nowrap;
+}
+
+/* CHART */
+.chart-wrap{ position:relative; height:220px; margin-top:8px; }
+
+/* SLIDER */
+input[type=range]{
+  width:100%; accent-color:var(--caña);
+  height:6px; border:none; padding:0; cursor:pointer;
+}
+
+/* TOAST */
+#toast{
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:#222; color:#fff; padding:11px 20px;
+  border-radius:30px; font-size:13px; font-weight:700;
+  z-index:999; transition:transform .3s; white-space:nowrap;
+}
+#toast.show{ transform:translateX(-50%) translateY(0); }
+
+.divider{ height:1px; background:#eee; margin:12px 0; }
+.sec-label{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#aaa; margin-bottom:8px; }
+.nota{ font-size:11px; color:#999; line-height:1.5; margin-top:6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-top">
+    <div class="h-brand">GAT · KFR</div>
+    <div>
+      <div class="h-title">🌾 Proyección de Caña</div>
+      <div class="h-sub">Modelo multifactorial · Zafra siguiente</div>
+    </div>
+    <div style="font-size:24px">📈</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('productor')">👤 Productor</div>
+  <div class="tab" onclick="switchTab('zona')">🗺 Por Zona</div>
+  <div class="tab" onclick="switchTab('ingenio')">🏭 Ingenio</div>
+  <div class="tab" onclick="switchTab('metodologia')">📐 Modelo</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 1 — PROYECCIÓN POR PRODUCTOR
+════════════════════════════════════════ -->
+<div id="view-productor" class="view active">
+
+  <div class="card">
+    <div class="card-title">Datos del productor</div>
+    <div class="row-2">
+      <div class="field">
+        <label>Productor</label>
+        <input type="text" id="p-nombre" placeholder="Nombre o ID" value="Juan López (P-001)">
+      </div>
+      <div class="field">
+        <label>Zona / Ingenio</label>
+        <select id="p-zona">
+          <option>La Joya</option><option>La Gloria</option>
+          <option>San Cristóbal</option><option>Independencia</option>
+        </select>
+      </div>
+    </div>
+    <div class="row-3">
+      <div class="field">
+        <label>Superficie (ha)</label>
+        <input type="number" id="p-ha" value="4.5" step="0.5" min="0.5">
+      </div>
+      <div class="field">
+        <label>Rendimiento hist. (t/ha)</label>
+        <input type="number" id="p-rend-hist" value="78" step="1" min="20">
+      </div>
+      <div class="field">
+        <label>Edad del cañal</label>
+        <select id="p-edad-canal">
+          <option value="planta">Planta</option>
+          <option value="soca" selected>Soca 1</option>
+          <option value="soca2">Soca 2</option>
+          <option value="resoca">Resoca 3+</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Estado de labores culturales</div>
+    <p class="nota" style="margin-bottom:10px;">Indica el cumplimiento de cada labor. Esto ajusta el rendimiento esperado.</p>
+    <div id="labores-inputs"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Factor climático</div>
+    <div class="field">
+      <label>Lluvia acumulada del ciclo (mm) — Desliza</label>
+      <input type="range" id="p-lluvia" min="400" max="1800" value="1100"
+             oninput="document.getElementById('lluvia-val').textContent=this.value+' mm'; calcular()">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:2px;">
+        <span>400 mm (seco)</span>
+        <strong id="lluvia-val" style="color:var(--caña-d)">1100 mm</strong>
+        <span>1800 mm (exceso)</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Lluvia óptima de la zona (mm)</label>
+      <input type="number" id="p-lluvia-opt" value="1200" step="50"
+             oninput="calcular()">
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="calcular()">🔢 Calcular proyección</button>
+
+  <div id="resultado" style="display:none; margin-top:14px;">
+
+    <div class="proy-hero" id="proy-hero">
+      <div class="proy-num" id="proy-ton">—</div>
+      <div class="proy-unit">toneladas estimadas</div>
+      <div class="proy-label" id="proy-rend-lbl">— t/ha</div>
+    </div>
+
+    <div class="proy-rango">
+      <div class="rango-box pesimista">
+        <div class="rango-num" id="proy-min" style="color:var(--rojo)">—</div>
+        <div class="rango-lbl">Escenario pesimista</div>
+      </div>
+      <div class="rango-box optimista">
+        <div class="rango-num" id="proy-max" style="color:var(--verde-d)">—</div>
+        <div class="rango-lbl">Escenario optimista</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Desglose de factores</div>
+      <div id="factores-detalle"></div>
+      <p class="nota" style="margin-top:10px;">
+        El rendimiento proyectado = rendimiento histórico × factor edad × factor labores × factor climático.
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Comparativo histórico vs proyección</div>
+      <div class="chart-wrap">
+        <canvas id="chart-productor"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Recomendaciones automáticas</div>
+      <div id="recomendaciones"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 2 — POR ZONA
+════════════════════════════════════════ -->
+<div id="view-zona" class="view">
+
+  <div class="zonas-row" id="zona-pills">
+    <span class="zona-pill active" onclick="selectZona(this,'La Joya')">La Joya</span>
+    <span class="zona-pill" onclick="selectZona(this,'La Gloria')">La Gloria</span>
+    <span class="zona-pill" onclick="selectZona(this,'San Cristóbal')">San Cristóbal</span>
+    <span class="zona-pill" onclick="selectZona(this,'Independencia')">Independencia</span>
+  </div>
+
+  <div class="stat-grid" id="zona-stats"></div>
+
+  <div class="card">
+    <div class="card-title">Semáforo de abasto</div>
+    <p class="nota" style="margin-bottom:10px;">Proyección vs. meta de molienda de la zona.</p>
+    <div class="field">
+      <label>Meta de molienda (ton)</label>
+      <input type="number" id="zona-meta" value="25000" step="1000" oninput="renderZona()">
+    </div>
+    <div id="zona-abasto"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Productores de la zona</div>
+    <div class="prod-row prod-row-header">
+      <div>Productor</div>
+      <div>Rend.</div>
+      <div>Ton proy.</div>
+      <div>Estado</div>
+    </div>
+    <div id="zona-tabla"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Tendencia de rendimiento</div>
+    <div class="chart-wrap">
+      <canvas id="chart-zona"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 3 — INGENIO (ABASTO GLOBAL)
+════════════════════════════════════════ -->
+<div id="view-ingenio" class="view">
+
+  <div class="card">
+    <div class="card-title">Meta de molienda total</div>
+    <div class="row-2">
+      <div class="field">
+        <label>Meta (miles de ton)</label>
+        <input type="number" id="ing-meta" value="120" step="5" oninput="renderIngenio()">
+      </div>
+      <div class="field">
+        <label>Zafra de referencia</label>
+        <select id="ing-zafra">
+          <option>2024–2025</option><option selected>2025–2026</option><option>2026–2027</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-grid" id="ing-stats"></div>
+
+  <div class="card">
+    <div class="card-title">Abasto proyectado por zona</div>
+    <div id="ing-abasto"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Proyección histórica 5 zafras</div>
+    <div class="chart-wrap" style="height:240px;">
+      <canvas id="chart-ingenio"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alertas de abasto</div>
+    <div id="ing-alertas"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 4 — METODOLOGÍA DEL MODELO
+════════════════════════════════════════ -->
+<div id="view-metodologia" class="view">
+
+  <div class="card">
+    <div class="card-title">Fórmula base</div>
+    <div style="background:var(--caña-l);border-radius:8px;padding:14px;font-family:monospace;font-size:13px;line-height:2;color:var(--caña-d);">
+      <strong>Rendimiento proyectado (t/ha) =</strong><br>
+      &nbsp;&nbsp;R<sub>hist</sub> × F<sub>edad</sub> × F<sub>labores</sub> × F<sub>clima</sub>
+      <br><br>
+      <strong>Toneladas proyectadas =</strong><br>
+      &nbsp;&nbsp;Rend. proy. × Superficie (ha)
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Factor edad del cañal (F_edad)</div>
+    <div id="tabla-edad"></div>
+    <p class="nota">Basado en curvas de producción de caña de azúcar documentadas en literatura agronómica tropical (CENGICAÑA, IMPA). La planta tiene menor rendimiento que soca 1, que es el óptimo.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Factor de labores culturales (F_labores)</div>
+    <div id="tabla-labores-factor"></div>
+    <p class="nota">Cada labor tiene un peso distinto según su impacto en el rendimiento. El factor combinado es el promedio ponderado.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Factor climático (F_clima)</div>
+    <div style="font-size:13px;line-height:1.8;">
+      <p>Se calcula en función de la desviación entre la lluvia real y la lluvia óptima de la zona:</p>
+      <div style="background:var(--caña-l);border-radius:8px;padding:12px;margin:10px 0;font-family:monospace;font-size:12px;color:var(--caña-d);">
+        desv = (lluvia_real − lluvia_óptima) / lluvia_óptima<br><br>
+        Si desv &lt; −0.30: F = 0.75 (déficit severo)<br>
+        Si desv ∈ [−0.30, −0.10]: F = 0.88<br>
+        Si desv ∈ [−0.10, +0.15]: F = 1.00 (óptimo)<br>
+        Si desv ∈ [+0.15, +0.35]: F = 0.94 (exceso moderado)<br>
+        Si desv &gt; +0.35: F = 0.85 (exceso severo, encharcamiento)
+      </div>
+    </div>
+    <p class="nota">El exceso también penaliza porque favorece enfermedades y dificulta la cosecha mecanizada.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Pesos de cada labor</div>
+    <div id="tabla-pesos"></div>
+    <p class="nota">Los pesos fueron definidos con base en impacto agronómico documentado. Pueden ajustarse según los resultados observados en campo.</p>
+  </div>
+
+  <div class="card" style="border:2px solid var(--caña);">
+    <div class="card-title">Ajuste de parámetros del modelo</div>
+    <p class="nota" style="margin-bottom:12px;">Si tu zona tiene valores distintos, ajusta aquí. Los cambios se aplican en todos los cálculos.</p>
+    <div id="ajuste-pesos"></div>
+    <button class="btn btn-outline btn-sm" onclick="resetPesos()">↺ Restablecer valores por defecto</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// MODELO — PARÁMETROS
+// ══════════════════════════════════════════
+
+// Factor edad del cañal
+const FACTOR_EDAD = {
+  planta:  0.88,
+  soca:    1.00,
+  soca2:   0.96,
+  resoca:  0.88,
+};
+const EDAD_LABELS = {
+  planta:'Planta (año 1)', soca:'Soca 1 (óptimo)', soca2:'Soca 2', resoca:'Resoca 3+',
+};
+
+// Labores: peso (importancia en rendimiento) y penalización
+const LABORES_DEF = [
+  { key:'riego',             label:'💧 Riego',              peso:0.22 },
+  { key:'fertilizacion',     label:'🌱 Fertilización',      peso:0.22 },
+  { key:'control_plagas',    label:'🐛 Control de plagas',  peso:0.18 },
+  { key:'siembra',           label:'🌾 Siembra / resiembra',peso:0.14 },
+  { key:'cachaza',           label:'♻️ Cachaza',            peso:0.10 },
+  { key:'agroquimicos',      label:'🧪 Agroquímicos',       peso:0.08 },
+  { key:'control_biologico', label:'🦋 Control biológico',  peso:0.06 },
+];
+// Multiplicador por estatus de cada labor
+const MULT_STATUS = { 'en-tiempo':1.00, 'destiempo':0.88, 'no-hecho':0.68, '':0.95 };
+
+// Pesos editables (localStorage)
+function getPesos(){
+  try{ return JSON.parse(localStorage.getItem('gat_pesos')) ?? null; }catch{ return null; }
+}
+function setPesos(p){ localStorage.setItem('gat_pesos', JSON.stringify(p)); }
+function resetPesos(){ localStorage.removeItem('gat_pesos'); buildAjustePesos(); calcular(); showToast('Pesos restablecidos'); }
+function getLaboresConPesos(){
+  const guardados = getPesos();
+  return LABORES_DEF.map(l=>{
+    const p = guardados?.[l.key] ?? l.peso;
+    return { ...l, peso:p };
+  });
+}
+
+// Datos demo por zona (simula productores reales)
+const DEMO_ZONAS = {
+  'La Joya': [
+    { nombre:'Juan López',      ha:4.5, rendHist:78, edadCanal:'soca',   labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'destiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'no-hecho',control_biologico:'en-tiempo'}, lluvia:1100, opt:1200 },
+    { nombre:'María Hernández', ha:3.0, rendHist:72, edadCanal:'soca2',  labores:{riego:'destiempo',fertilizacion:'no-hecho',control_plagas:'no-hecho',siembra:'en-tiempo',cachaza:'destiempo',agroquimicos:'en-tiempo',control_biologico:'no-hecho'}, lluvia:1000, opt:1200 },
+    { nombre:'Pedro Ramírez',   ha:6.0, rendHist:85, edadCanal:'planta', labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'en-tiempo',control_biologico:'en-tiempo'}, lluvia:1150, opt:1200 },
+    { nombre:'Ana Flores',      ha:2.5, rendHist:70, edadCanal:'resoca', labores:{riego:'no-hecho',fertilizacion:'no-hecho',control_plagas:'no-hecho',siembra:'en-tiempo',cachaza:'no-hecho',agroquimicos:'no-hecho',control_biologico:'no-hecho'}, lluvia:1100, opt:1200 },
+    { nombre:'Luis Torres',     ha:5.0, rendHist:80, edadCanal:'soca',   labores:{riego:'en-tiempo',fertilizacion:'destiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'destiempo',control_biologico:'en-tiempo'}, lluvia:1200, opt:1200 },
+  ],
+  'La Gloria': [
+    { nombre:'Carmen Ruiz',     ha:4.0, rendHist:75, edadCanal:'soca',   labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'destiempo',agroquimicos:'en-tiempo',control_biologico:'destiempo'}, lluvia:1300, opt:1200 },
+    { nombre:'Roberto García',  ha:3.5, rendHist:68, edadCanal:'resoca', labores:{riego:'destiempo',fertilizacion:'no-hecho',control_plagas:'destiempo',siembra:'en-tiempo',cachaza:'no-hecho',agroquimicos:'destiempo',control_biologico:'no-hecho'}, lluvia:1100, opt:1200 },
+    { nombre:'Isabel Morales',  ha:5.5, rendHist:82, edadCanal:'soca2',  labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'en-tiempo',control_biologico:'en-tiempo'}, lluvia:1250, opt:1200 },
+  ],
+  'San Cristóbal': [
+    { nombre:'Miguel Ángel Cruz',ha:7.0,rendHist:88, edadCanal:'soca',   labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'en-tiempo',control_biologico:'en-tiempo'}, lluvia:1400, opt:1300 },
+    { nombre:'Esperanza Luna',   ha:3.0,rendHist:65, edadCanal:'resoca', labores:{riego:'no-hecho',fertilizacion:'destiempo',control_plagas:'no-hecho',siembra:'destiempo',cachaza:'no-hecho',agroquimicos:'no-hecho',control_biologico:'no-hecho'}, lluvia:1000, opt:1300 },
+  ],
+  'Independencia': [
+    { nombre:'Francisco Mendoza',ha:4.0,rendHist:76, edadCanal:'soca2',  labores:{riego:'en-tiempo',fertilizacion:'en-tiempo',control_plagas:'destiempo',siembra:'en-tiempo',cachaza:'en-tiempo',agroquimicos:'destiempo',control_biologico:'en-tiempo'}, lluvia:1100, opt:1150 },
+    { nombre:'Gloria Vázquez',   ha:2.0,rendHist:71, edadCanal:'soca',   labores:{riego:'destiempo',fertilizacion:'en-tiempo',control_plagas:'en-tiempo',siembra:'en-tiempo',cachaza:'destiempo',agroquimicos:'en-tiempo',control_biologico:'destiempo'}, lluvia:1050, opt:1150 },
+  ],
+};
+
+// ══════════════════════════════════════════
+// NÚCLEO DEL MODELO
+// ══════════════════════════════════════════
+function factorLabores(laboresObj){
+  const labs = getLaboresConPesos();
+  const totalPeso = labs.reduce((s,l)=>s+l.peso, 0);
+  let sum = 0;
+  labs.forEach(l=>{
+    const st = laboresObj[l.key] || '';
+    sum += (l.peso / totalPeso) * MULT_STATUS[st];
+  });
+  return sum;
+}
+
+function factorClima(lluviaReal, lluviaOpt){
+  const desv = (lluviaReal - lluviaOpt) / lluviaOpt;
+  if(desv < -0.30) return 0.75;
+  if(desv < -0.10) return 0.75 + (desv + 0.30) / 0.20 * 0.13; // interpolación
+  if(desv <= 0.15) return 1.00;
+  if(desv <= 0.35) return 0.94;
+  return 0.85;
+}
+
+function proyectar(prod){
+  const fEdad   = FACTOR_EDAD[prod.edadCanal] ?? 1.0;
+  const fLabores= factorLabores(prod.labores);
+  const fClima  = factorClima(prod.lluvia, prod.opt);
+  const rendProy= prod.rendHist * fEdad * fLabores * fClima;
+  const tonProy = rendProy * prod.ha;
+  return {
+    rendProy: Math.round(rendProy * 10) / 10,
+    tonProy:  Math.round(tonProy),
+    fEdad, fLabores: Math.round(fLabores * 1000)/1000,
+    fClima: Math.round(fClima * 1000)/1000,
+    tonMin: Math.round(tonProy * 0.90),
+    tonMax: Math.round(tonProy * 1.10),
+  };
+}
+
+// ══════════════════════════════════════════
+// BUILD: INPUTS DE LABORES
+// ══════════════════════════════════════════
+function buildLaborInputs(){
+  const labs = getLaboresConPesos();
+  document.getElementById('labores-inputs').innerHTML = labs.map(l=>`
+    <div style="margin-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;">
+        <span style="font-size:13px;font-weight:600;">${l.label}</span>
+        <span style="font-size:10px;color:#aaa;">Peso: ${Math.round(l.peso*100)}%</span>
+      </div>
+      <select onchange="calcular()" id="labor-${l.key}"
+        style="border-radius:7px;padding:8px 10px;font-size:13px;border:1.5px solid #ddd;width:100%;">
+        <option value="">— Sin dato —</option>
+        <option value="en-tiempo">✅ En tiempo</option>
+        <option value="destiempo">⚠️ Destiempo</option>
+        <option value="no-hecho">🔴 No ha hecho</option>
+      </select>
+    </div>`).join('');
+}
+
+function getLaborInputs(){
+  return Object.fromEntries(getLaboresConPesos().map(l=>[l.key, document.getElementById('labor-'+l.key)?.value||'']));
+}
+
+// ══════════════════════════════════════════
+// CALCULAR — TAB PRODUCTOR
+// ══════════════════════════════════════════
+let chartProd = null;
+function calcular(){
+  const ha       = parseFloat(document.getElementById('p-ha').value) || 4;
+  const rendHist = parseFloat(document.getElementById('p-rend-hist').value) || 78;
+  const edadCanal= document.getElementById('p-edad-canal').value;
+  const lluvia   = parseFloat(document.getElementById('p-lluvia').value) || 1100;
+  const opt      = parseFloat(document.getElementById('p-lluvia-opt').value) || 1200;
+  const labores  = getLaborInputs();
+
+  const r = proyectar({ ha, rendHist, edadCanal, lluvia, opt, labores });
+
+  document.getElementById('resultado').style.display = 'block';
+  document.getElementById('proy-ton').textContent    = r.tonProy.toLocaleString('es-MX');
+  document.getElementById('proy-rend-lbl').textContent = `${r.rendProy} t/ha proyectadas`;
+  document.getElementById('proy-min').textContent    = r.tonMin.toLocaleString('es-MX') + ' ton';
+  document.getElementById('proy-max').textContent    = r.tonMax.toLocaleString('es-MX') + ' ton';
+
+  // Color del hero
+  const pct = r.rendProy / rendHist;
+  const heroEl = document.getElementById('proy-hero');
+  if(pct >= 0.95)      heroEl.style.background = 'linear-gradient(135deg,var(--verde-d),var(--verde))';
+  else if(pct >= 0.80) heroEl.style.background = 'linear-gradient(135deg,#b07a00,var(--amarillo))';
+  else                 heroEl.style.background = 'linear-gradient(135deg,#8a0000,var(--rojo))';
+
+  // Factores
+  function factorRow(nombre, valor, color, desc){
+    const pct2 = Math.min(Math.max(valor, 0), 1);
+    return `<div class="factor-row">
+      <div>
+        <div class="factor-name">${nombre}</div>
+        <div class="factor-bar"><div class="factor-fill" style="width:${pct2*100}%;background:${color}"></div></div>
+      </div>
+      <div class="factor-val" style="color:${color}">${(valor*100).toFixed(0)}%</div>
+    </div>`;
+  }
+  document.getElementById('factores-detalle').innerHTML =
+    factorRow('Edad del cañal', r.fEdad, r.fEdad>=0.95?'var(--verde)':r.fEdad>=0.88?'var(--amarillo)':'var(--rojo)', '') +
+    factorRow('Labores culturales', r.fLabores, r.fLabores>=0.92?'var(--verde)':r.fLabores>=0.80?'var(--amarillo)':'var(--rojo)', '') +
+    factorRow('Factor climático', r.fClima, r.fClima>=0.95?'var(--verde)':r.fClima>=0.85?'var(--amarillo)':'var(--rojo)', '') +
+    `<div class="factor-row" style="margin-top:6px;border-top:2px solid var(--caña);padding-top:10px;">
+      <div class="factor-name" style="font-size:14px;">Factor combinado</div>
+      <div class="factor-val" style="font-size:18px;color:${pct>=0.95?'var(--verde)':pct>=0.80?'var(--amarillo)':'var(--rojo)'}">
+        ${(pct*100).toFixed(1)}%
+      </div>
+    </div>`;
+
+  // Recomendaciones
+  const recs = [];
+  if(r.fLabores < 0.85) recs.push('⚠️ <strong>Labores culturales</strong>: varias labores sin realizar o en destiempo. Priorizar fertilización y riego.');
+  if(r.fClima < 0.90){
+    const desv = (lluvia - opt)/opt;
+    recs.push(desv < 0
+      ? '💧 <strong>Déficit hídrico</strong>: considera riego complementario o monitoreo de estrés.'
+      : '🌧 <strong>Exceso de lluvia</strong>: revisa drenaje y riesgo de enfermedades radiculares.');
+  }
+  if(edadCanal === 'resoca') recs.push('🔄 <strong>Cañal envejecido</strong>: evaluar resiembra total para recuperar rendimiento potencial.');
+  if(r.fEdad < 0.92 && edadCanal === 'planta') recs.push('🌱 <strong>Planta nueva</strong>: rendimiento menor es normal. Asegurar establecimiento óptimo.');
+  if(!recs.length) recs.push('✅ <strong>Condiciones favorables</strong>: mantener el plan de labores para alcanzar el rendimiento proyectado.');
+  document.getElementById('recomendaciones').innerHTML = recs.map(r=>`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">${r}</div>`).join('');
+
+  // Gráfica
+  const labels = ['Zafra −2','Zafra −1','Zafra actual','Proyección'];
+  const histData = [
+    Math.round(rendHist * ha * 0.91),
+    Math.round(rendHist * ha * 0.97),
+    Math.round(rendHist * ha),
+    r.tonProy,
+  ];
+  if(chartProd) chartProd.destroy();
+  chartProd = new Chart(document.getElementById('chart-productor'), {
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Toneladas',
+        data: histData,
+        backgroundColor:['#ccc','#bbb','#6AAF28','#c8a84b'],
+        borderRadius:6,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ y:{ beginAtZero:false, grid:{color:'#f0f0f0'} }, x:{ grid:{display:false} } }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// TAB ZONA
+// ══════════════════════════════════════════
+let zonaActual = 'La Joya';
+let chartZona  = null;
+function selectZona(el, zona){
+  document.querySelectorAll('.zona-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  zonaActual = zona;
+  renderZona();
+}
+function renderZona(){
+  const zona   = zonaActual;
+  const prods  = DEMO_ZONAS[zona] || [];
+  const meta   = parseFloat(document.getElementById('zona-meta').value) || 25000;
+
+  const resultados = prods.map(p=>({ ...p, ...proyectar(p) }));
+  const totalTon   = resultados.reduce((s,r)=>s+r.tonProy, 0);
+  const totalHa    = prods.reduce((s,p)=>s+p.ha, 0);
+  const rendProm   = totalTon / totalHa;
+  const pctMeta    = totalTon / meta;
+
+  document.getElementById('zona-stats').innerHTML = `
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--caña-d)">${prods.length}</div>
+      <div class="stat-lbl">Productores</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--verde)">${totalHa.toFixed(1)}</div>
+      <div class="stat-lbl">Hectáreas</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:${pctMeta>=1?'var(--verde)':pctMeta>=0.8?'var(--amarillo)':'var(--rojo)'}">${Math.round(pctMeta*100)}%</div>
+      <div class="stat-lbl">vs. Meta</div>
+    </div>`;
+
+  // Semáforo abasto
+  const fillColor = pctMeta>=1?'var(--verde)':pctMeta>=0.8?'var(--amarillo)':'var(--rojo)';
+  const fillW     = Math.min(pctMeta,1)*100;
+  document.getElementById('zona-abasto').innerHTML = `
+    <div style="font-size:13px;margin-bottom:4px;display:flex;justify-content:space-between;">
+      <span>Proyectado: <strong>${totalTon.toLocaleString('es-MX')} ton</strong></span>
+      <span style="color:#888;">Meta: ${meta.toLocaleString('es-MX')} ton</span>
+    </div>
+    <div class="abasto-bar">
+      <div class="abasto-fill" style="width:${fillW}%;background:${fillColor}">
+        ${Math.round(pctMeta*100)}%
+      </div>
+      <div class="abasto-meta" style="left:100%;display:${pctMeta<1?'flex':'none'}">
+        <div class="abasto-meta-lbl">Meta</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--gris-m);margin-top:4px;">
+      Rend. promedio zona: <strong>${rendProm.toFixed(1)} t/ha</strong>
+      ${pctMeta<1?` · Déficit: <strong style="color:var(--rojo)">${(meta-totalTon).toLocaleString('es-MX')} ton</strong>`:''}
+    </div>`;
+
+  // Tabla productores
+  document.getElementById('zona-tabla').innerHTML = resultados.map(r=>{
+    const pct2 = r.rendProy / r.rendHist;
+    const chipCls = pct2>=0.93?'chip-bien':pct2>=0.80?'chip-regular':'chip-mal';
+    const chipLbl = pct2>=0.93?'✅ Bien':pct2>=0.80?'⚠️ Regular':'🔴 En riesgo';
+    return `<div class="prod-row">
+      <div>
+        <div style="font-weight:700;font-size:13px;">${r.nombre}</div>
+        <div style="font-size:10px;color:#888;">${r.ha} ha · ${EDAD_LABELS[r.edadCanal]||r.edadCanal}</div>
+      </div>
+      <div style="font-weight:800;font-size:13px;">${r.rendProy}</div>
+      <div style="font-weight:800;font-size:13px;">${r.tonProy.toLocaleString('es-MX')}</div>
+      <div><span class="proy-chip ${chipCls}">${chipLbl}</span></div>
+    </div>`;
+  }).join('');
+
+  // Gráfica zona
+  if(chartZona) chartZona.destroy();
+  chartZona = new Chart(document.getElementById('chart-zona'), {
+    type:'bar',
+    data:{
+      labels: resultados.map(r=>r.nombre.split(' ')[0]),
+      datasets:[
+        { label:'Rend. histórico (t/ha)', data:resultados.map(r=>r.rendHist), backgroundColor:'#ddd', borderRadius:4 },
+        { label:'Rend. proyectado (t/ha)',data:resultados.map(r=>r.rendProy), backgroundColor:'#c8a84b', borderRadius:4 },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ font:{size:11} } } },
+      scales:{ y:{ beginAtZero:false, grid:{color:'#f0f0f0'} }, x:{ grid:{display:false} } }
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// TAB INGENIO
+// ══════════════════════════════════════════
+let chartIng = null;
+function renderIngenio(){
+  const metaTotal = (parseFloat(document.getElementById('ing-meta').value)||120)*1000;
+
+  const zonas = Object.keys(DEMO_ZONAS);
+  const zonaRes = zonas.map(zona=>{
+    const prods = DEMO_ZONAS[zona];
+    const tot   = prods.reduce((s,p)=>s+proyectar(p).tonProy, 0);
+    const ha    = prods.reduce((s,p)=>s+p.ha, 0);
+    return { zona, ton:Math.round(tot), ha:ha.toFixed(1), n:prods.length };
+  });
+  const totalTon = zonaRes.reduce((s,z)=>s+z.ton, 0);
+  const totalHa  = zonaRes.reduce((s,z)=>s+parseFloat(z.ha), 0);
+  const pctMeta  = totalTon/metaTotal;
+
+  document.getElementById('ing-stats').innerHTML = `
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--caña-d)">${(totalTon/1000).toFixed(1)}k</div>
+      <div class="stat-lbl">Ton proyectadas</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--verde)">${totalHa.toFixed(0)}</div>
+      <div class="stat-lbl">Ha totales</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:${pctMeta>=1?'var(--verde)':pctMeta>=0.8?'var(--amarillo)':'var(--rojo)'}">${Math.round(pctMeta*100)}%</div>
+      <div class="stat-lbl">vs. Meta</div>
+    </div>`;
+
+  document.getElementById('ing-abasto').innerHTML = zonaRes.map(z=>{
+    const pm = z.ton / (metaTotal/zonas.length);
+    const fc = pm>=1?'var(--verde)':pm>=0.8?'var(--amarillo)':'var(--rojo)';
+    const fw = Math.min(pm,1.2)*100/1.2;
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
+        <strong>${z.zona}</strong>
+        <span>${z.ton.toLocaleString('es-MX')} ton · ${z.n} prod · ${z.ha} ha</span>
+      </div>
+      <div class="abasto-bar">
+        <div class="abasto-fill" style="width:${fw}%;background:${fc}">${z.ton.toLocaleString('es-MX')}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Gráfica histórica (5 zafras simuladas)
+  const zafras = ['20–21','21–22','22–23','23–24','24–25','Proyec.'];
+  const serieHist = [totalTon*0.87,totalTon*0.91,totalTon*0.95,totalTon*0.98,totalTon,null].map(v=>v?Math.round(v):null);
+  const serieProy = [null,null,null,null,null,totalTon];
+  if(chartIng) chartIng.destroy();
+  chartIng = new Chart(document.getElementById('chart-ingenio'), {
+    type:'bar',
+    data:{
+      labels:zafras,
+      datasets:[
+        { label:'Histórico', data:serieHist, backgroundColor:'#6AAF28aa', borderRadius:5 },
+        { label:'Proyección',data:serieProy, backgroundColor:'#c8a84b',   borderRadius:5 },
+        { label:'Meta',      data:Array(6).fill(metaTotal), type:'line',
+          borderColor:'#c62828', borderWidth:2, borderDash:[6,4],
+          pointRadius:0, fill:false }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{font:{size:11}} } },
+      scales:{ y:{ beginAtZero:false, grid:{color:'#f0f0f0'} }, x:{ grid:{display:false} } }
+    }
+  });
+
+  // Alertas
+  const alertas = zonaRes.filter(z=>z.ton<metaTotal/zonas.length*0.85);
+  document.getElementById('ing-alertas').innerHTML = alertas.length
+    ? alertas.map(z=>`<div style="padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+        <span style="background:#f8d7da;color:#842029;padding:3px 9px;border-radius:20px;font-weight:800;font-size:11px;">🚨 Riesgo</span>
+        <span style="margin-left:8px;"><strong>${z.zona}</strong> — proyecta ${z.ton.toLocaleString('es-MX')} ton, por debajo del promedio esperado</span>
+      </div>`).join('')
+    : '<div style="text-align:center;padding:16px;color:#bbb;">✅ Todas las zonas en rango esperado</div>';
+}
+
+// ══════════════════════════════════════════
+// TAB METODOLOGÍA
+// ══════════════════════════════════════════
+function buildMetodologia(){
+  // Tabla edad
+  document.getElementById('tabla-edad').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+      ${Object.entries(FACTOR_EDAD).map(([k,v])=>`
+        <div style="background:${v>=0.95?'var(--verde-l)':v>=0.90?'var(--caña-l)':'#fdecea'};border-radius:7px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;font-weight:600;">${EDAD_LABELS[k]}</span>
+          <span style="font-size:18px;font-weight:900;color:${v>=0.95?'var(--verde-d)':v>=0.90?'var(--caña-d)':'var(--rojo)'}">×${v}</span>
+        </div>`).join('')}
+    </div>`;
+
+  // Tabla pesos labores
+  const labs = getLaboresConPesos();
+  document.getElementById('tabla-labores-factor').innerHTML = labs.map(l=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+      <span style="font-weight:600;">${l.label}</span>
+      <div style="display:flex;gap:16px;font-size:12px;color:#666;">
+        <span>✅ ×1.00</span><span>⚠️ ×0.88</span><span>🔴 ×0.68</span>
+        <span style="font-weight:800;color:var(--caña-d)">Peso: ${Math.round(l.peso*100)}%</span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('tabla-pesos').innerHTML = labs.map(l=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+      <span>${l.label}</span>
+      <span style="font-weight:800;color:var(--caña-d)">${Math.round(l.peso*100)}%</span>
+    </div>`).join('');
+}
+
+function buildAjustePesos(){
+  const labs = getLaboresConPesos();
+  document.getElementById('ajuste-pesos').innerHTML = labs.map(l=>`
+    <div class="field">
+      <label>${l.label} (peso %)</label>
+      <input type="number" id="peso-${l.key}" value="${Math.round(l.peso*100)}" min="1" max="50"
+             oninput="savePeso('${l.key}', this.value)">
+    </div>`).join('');
+}
+
+function savePeso(key, val){
+  const pesos = getPesos() ?? Object.fromEntries(LABORES_DEF.map(l=>[l.key, l.peso]));
+  pesos[key] = parseFloat(val)/100;
+  setPesos(pesos);
+  buildMetodologia();
+  showToast('Peso actualizado');
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('view-'+name).classList.add('active');
+  if(name==='zona')       renderZona();
+  if(name==='ingenio')    renderIngenio();
+  if(name==='metodologia'){ buildMetodologia(); buildAjustePesos(); }
+}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildLaborInputs();
+// Preseleccionar labores para demo
+setTimeout(()=>{
+  const demo = DEMO_ZONAS['La Joya'][0].labores;
+  Object.entries(demo).forEach(([k,v])=>{
+    const el = document.getElementById('labor-'+k);
+    if(el) el.value=v;
+  });
+  calcular();
+}, 100);
+</script>
+</body>
+</html>

@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GAT · Labores Culturales</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, where, orderBy, serverTimestamp, getDoc }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadString, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+// ╔══════════════════════════════════════════════════════════╗
+// ║  🔧 REEMPLAZA ESTOS VALORES CON TU CONFIGURACIÓN FIREBASE ║
+// ║  console.firebase.google.com → Tu proyecto → Configuración║
+// ╚══════════════════════════════════════════════════════════╝
+const firebaseConfig = {
+  apiKey:            "TU_API_KEY",
+  authDomain:        "TU_PROYECTO.firebaseapp.com",
+  projectId:         "TU_PROYECTO",
+  storageBucket:     "TU_PROYECTO.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId:             "TU_APP_ID"
+};
+
+let app, db, storage, isFirebaseReady = false;
+try {
+  if (!firebaseConfig.apiKey.startsWith("TU_")) {
+    app     = initializeApp(firebaseConfig);
+    db      = getFirestore(app);
+    storage = getStorage(app);
+    isFirebaseReady = true;
+  }
+} catch(e) { console.warn("Firebase no configurado:", e); }
+
+window._fb = { db, storage, isFirebaseReady,
+  collection, doc, setDoc, getDocs, onSnapshot, query, where, orderBy, serverTimestamp, getDoc,
+  ref, uploadString, getDownloadURL };
+</script>
+
+<style>
+:root {
+  --verde:       #6AAF28;
+  --verde-d:     #4a8a10;
+  --verde-l:     #e8f5d6;
+  --caña:        #c8a84b;   /* dorado caña madura — acento único */
+  --caña-l:      #fdf6e3;
+  --tierra:      #7a5230;
+  --gris-f:      #2d2d2d;
+  --gris-m:      #666;
+  --gris-l:      #f2f3f0;
+  --blanco:      #fafaf8;
+  --rojo:        #c62828;
+  --naranja:     #e65100;
+  --amarillo:    #f9a825;
+  --azul:        #1565c0;
+  --radio:       10px;
+  --sombra:      0 2px 10px rgba(0,0,0,0.10);
+  --sombra-l:    0 1px 4px rgba(0,0,0,0.07);
+}
+*{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body{ font-family:'Segoe UI',system-ui,sans-serif; background:var(--gris-l); color:var(--gris-f); min-height:100vh; font-size:15px; }
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,var(--verde-d) 0%,var(--verde) 100%);
+  color:#fff; padding:12px 16px 0; position:sticky; top:0; z-index:100;
+  box-shadow:0 2px 12px rgba(74,138,16,.35);
+}
+.h-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.h-brand{ font-size:10px; font-weight:800; letter-spacing:2px; text-transform:uppercase; opacity:.8; }
+.h-title{ font-size:17px; font-weight:800; letter-spacing:.3px; }
+.sync-dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#a5d6a7; border:2px solid #fff;
+  transition:background .4s;
+}
+.sync-dot.syncing{ background:var(--caña); animation:pulse 1s infinite; }
+.sync-dot.offline { background:#ef9a9a; }
+@keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.tabs{ display:flex; gap:1px; }
+.tab{
+  flex:1; padding:9px 2px; text-align:center; font-size:12px; font-weight:700;
+  color:rgba(255,255,255,.65); cursor:pointer; border-bottom:3px solid transparent;
+  transition:all .2s; letter-spacing:.2px; text-transform:uppercase;
+}
+.tab.active{ color:#fff; border-bottom-color:var(--caña); }
+
+/* ── VIEWS ── */
+.view{ display:none; padding:14px 14px 80px; }
+.view.active{ display:block; }
+
+/* ── SETUP BANNER ── */
+.setup-banner{
+  background:linear-gradient(135deg,#fff3e0,#ffe0b2);
+  border:2px solid var(--caña); border-radius:var(--radio);
+  padding:14px; margin-bottom:14px; font-size:13px; line-height:1.6;
+}
+.setup-banner strong{ color:var(--tierra); }
+.setup-banner code{
+  background:#fff8e1; padding:2px 6px; border-radius:4px;
+  font-family:monospace; font-size:12px; color:var(--tierra);
+}
+
+/* ── CARD ── */
+.card{
+  background:#fff; border-radius:var(--radio);
+  padding:14px; margin-bottom:12px; box-shadow:var(--sombra-l);
+}
+.card-title{
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px;
+  color:var(--verde-d); margin-bottom:12px;
+  display:flex; align-items:center; gap:6px;
+}
+.card-title::before{
+  content:''; display:inline-block; width:3px; height:14px;
+  background:var(--caña); border-radius:2px;
+}
+
+/* ── FORM ── */
+.field{ margin-bottom:11px; }
+label{ display:block; font-size:11px; font-weight:700; color:#777; margin-bottom:3px; text-transform:uppercase; letter-spacing:.5px; }
+input,select,textarea{
+  width:100%; border:1.5px solid #ddd; border-radius:8px;
+  padding:9px 12px; font-size:14px; font-family:inherit;
+  color:var(--gris-f); background:#fff; transition:border-color .2s;
+  -webkit-appearance:none; appearance:none;
+}
+input:focus,select:focus,textarea:focus{ outline:none; border-color:var(--verde); }
+textarea{ min-height:65px; resize:vertical; }
+.row-2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.row-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+/* ── LABORES ── */
+.labor-row{
+  display:grid; grid-template-columns:1fr auto;
+  align-items:center; gap:10px;
+  padding:9px 12px; border-radius:8px;
+  border-left:4px solid #ddd;
+  background:var(--gris-l); margin-bottom:7px;
+  transition:all .2s;
+}
+.labor-row.en-tiempo { border-left-color:var(--verde);   background:#edfada; }
+.labor-row.destiempo { border-left-color:var(--amarillo); background:#fff8e6; }
+.labor-row.no-hecho  { border-left-color:var(--rojo);    background:#fdecea; }
+.labor-nombre{ font-size:13px; font-weight:600; }
+.labor-sel{
+  border:1.5px solid #ccc; border-radius:6px; padding:6px 8px;
+  font-size:12px; font-weight:700; min-width:130px;
+  background:#fff; cursor:pointer; -webkit-appearance:none;
+}
+
+/* ── BOTONES ── */
+.btn{
+  display:block; width:100%; padding:13px; border:none;
+  border-radius:9px; font-size:15px; font-weight:800; cursor:pointer;
+  text-align:center; transition:all .18s; letter-spacing:.3px;
+}
+.btn-primary{ background:var(--verde); color:#fff; }
+.btn-primary:active{ background:var(--verde-d); transform:scale(.98); }
+.btn-secondary{ background:#fff; color:var(--verde); border:2px solid var(--verde); margin-top:8px; }
+.btn-caña{ background:var(--caña); color:#fff; }
+.btn-sm{ display:inline-block; width:auto; padding:7px 14px; font-size:12px; border-radius:7px; }
+.btn-danger{ background:var(--rojo); color:#fff; }
+.btn-outline-sm{
+  display:inline-block; width:auto; padding:6px 12px; font-size:12px; border-radius:7px;
+  border:1.5px solid var(--verde); color:var(--verde); background:#fff; cursor:pointer;
+}
+
+/* ── FIRMA (CANVAS) ── */
+#firma-canvas{
+  width:100%; height:160px; border:2px dashed #ccc;
+  border-radius:8px; background:#fafafa; touch-action:none; cursor:crosshair;
+  display:block;
+}
+#firma-canvas.signed{ border-color:var(--verde); border-style:solid; background:#edfada; }
+
+/* ── FOTOS ── */
+.foto-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px; }
+.foto-thumb{
+  aspect-ratio:1; border-radius:7px; object-fit:cover;
+  border:2px solid #ddd; width:100%;
+}
+.foto-add{
+  aspect-ratio:1; border-radius:7px; border:2px dashed #ccc;
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px; cursor:pointer; background:var(--gris-l);
+}
+
+/* ── SEMÁFORO TÉCNICO ── */
+.semaforo-bar{
+  height:10px; border-radius:6px;
+  background:linear-gradient(90deg, var(--verde) var(--pct,0%), #eee var(--pct,0%));
+  margin:6px 0 3px;
+}
+.tec-card{
+  background:#fff; border-radius:var(--radio); padding:14px;
+  margin-bottom:10px; box-shadow:var(--sombra-l);
+  border-left:4px solid var(--verde);
+}
+.tec-card.warn{ border-left-color:var(--amarillo); }
+.tec-card.alert{ border-left-color:var(--rojo); }
+.tec-nombre{ font-size:15px; font-weight:800; margin-bottom:2px; }
+.tec-zona{ font-size:11px; color:var(--gris-m); text-transform:uppercase; letter-spacing:.8px; }
+.tec-counters{ display:flex; gap:8px; margin-top:8px; }
+.tec-cnt{
+  flex:1; text-align:center; padding:8px 4px;
+  border-radius:7px; font-size:20px; font-weight:800; line-height:1;
+}
+.tec-cnt small{ display:block; font-size:9px; font-weight:600; color:#888; text-transform:uppercase; margin-top:2px; }
+
+/* ── ALERTAS ZONA ── */
+.alerta-zona{
+  border-radius:9px; padding:12px 14px; margin-bottom:10px;
+  border-left:5px solid;
+}
+.alerta-zona.critical{ background:#ffebee; border-left-color:var(--rojo); }
+.alerta-zona.warning{  background:#fff8e1; border-left-color:var(--amarillo); }
+.az-header{ font-size:13px; font-weight:800; margin-bottom:4px; }
+.az-sub{ font-size:12px; color:var(--gris-m); }
+.az-pct{
+  font-size:22px; font-weight:900;
+  float:right; margin-top:-22px;
+}
+
+/* ── STAT BOXES ── */
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+.stat-box{ background:#fff; border-radius:var(--radio); padding:12px 8px; text-align:center; box-shadow:var(--sombra-l); }
+.stat-num{ font-size:26px; font-weight:900; line-height:1; }
+.stat-lbl{ font-size:9px; color:#888; margin-top:3px; text-transform:uppercase; letter-spacing:.5px; }
+
+/* ── LABOR SUMMARY ── */
+.lsr{ display:grid; grid-template-columns:1fr 32px 32px 32px; gap:4px; align-items:center; padding:7px 0; border-bottom:1px solid #f0f0f0; font-size:13px; }
+.lsr:last-child{ border-bottom:none; }
+.lsr-n{ font-weight:600; font-size:12px; }
+.lsr-v{ text-align:center; font-weight:800; font-size:13px; }
+.lsr-h{ text-align:center; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:#bbb; }
+
+/* ── PRODUCER LIST ── */
+.prod-item{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px; background:#fff; border-radius:9px;
+  margin-bottom:8px; box-shadow:var(--sombra-l); cursor:pointer;
+}
+.prod-left{ flex:1; }
+.prod-id{ font-size:10px; font-weight:800; color:var(--verde-d); letter-spacing:1px; text-transform:uppercase; }
+.prod-name{ font-size:15px; font-weight:700; margin:1px 0; }
+.prod-meta{ font-size:11px; color:#888; }
+.score-circle{
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:900; margin-left:12px;
+}
+
+/* ── ZONA PILL ── */
+.zona-pill{
+  display:inline-block; padding:2px 10px; border-radius:20px;
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.8px;
+  background:var(--verde-l); color:var(--verde-d); margin-bottom:6px;
+}
+
+/* ── BADGES ── */
+.badge{
+  display:inline-block; padding:3px 9px; border-radius:20px;
+  font-size:11px; font-weight:700; margin:2px;
+}
+.badge-g{ background:#d4edda; color:#1a6b2e; }
+.badge-y{ background:#fff3cd; color:#856404; }
+.badge-r{ background:#f8d7da; color:#842029; }
+.badge-n{ background:#e2e3e5; color:#41464b; }
+
+/* ── MODAL ── */
+.overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.55); z-index:200;
+  overflow-y:auto; padding:16px;
+}
+.overlay.active{ display:flex; align-items:flex-start; justify-content:center; }
+.modal{
+  background:#fff; border-radius:14px; padding:20px;
+  width:100%; max-width:480px; margin:auto; position:relative;
+}
+.modal-title{ font-size:17px; font-weight:900; color:var(--verde-d); margin-bottom:14px; padding-right:26px; }
+.close-btn{ position:absolute; top:14px; right:14px; background:none; border:none; font-size:24px; cursor:pointer; color:#aaa; line-height:1; }
+
+/* ── SEARCH ── */
+.search-wrap{ position:relative; margin-bottom:12px; }
+.search-wrap input{ padding-left:36px; }
+.search-icon{ position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:16px; pointer-events:none; }
+
+/* ── OFFLINE QUEUE ── */
+.queue-badge{
+  display:inline-block; background:var(--caña); color:#fff;
+  border-radius:20px; padding:2px 8px; font-size:10px; font-weight:800;
+  margin-left:6px;
+}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background:#222; color:#fff; padding:11px 20px; border-radius:30px;
+  font-size:13px; font-weight:700; z-index:999; transition:transform .3s;
+  white-space:nowrap; max-width:90vw; text-align:center;
+}
+#toast.show{ transform:translateX(-50%) translateY(0); }
+
+.divider{ height:1px; background:#eee; margin:12px 0; }
+.sec-label{ font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1px; color:#aaa; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-top">
+    <div class="h-brand">GAT · KFR</div>
+    <div class="h-title">🌿 Labores Culturales</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div style="font-size:10px;color:rgba(255,255,255,.7)" id="sync-label">Local</div>
+      <div class="sync-dot offline" id="sync-dot" title="Estado de sincronización"></div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('captura')">📋 Captura</div>
+    <div class="tab" onclick="switchTab('tecnicos')">👷 Técnicos</div>
+    <div class="tab" onclick="switchTab('productores')">👥 Padrón</div>
+    <div class="tab" onclick="switchTab('dashboard')">📊 Jefe</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     TAB 1 — CAPTURA DE CAMPO
+═══════════════════════════════════════════ -->
+<div id="view-captura" class="view active">
+
+  <div id="firebase-banner" class="setup-banner" style="display:none;">
+    ⚠️ <strong>Firebase no configurado.</strong> Los datos se guardan solo en este dispositivo.<br>
+    Para sincronización en la nube: abre el archivo HTML, busca <code>firebaseConfig</code> y reemplaza los valores con los de tu proyecto en <strong>console.firebase.google.com</strong>.
+    <br><br>
+    <strong>Pasos rápidos:</strong><br>
+    1. Crea un proyecto → Agrega una app web → Copia la configuración<br>
+    2. En Firestore, crea la base de datos (modo prueba por ahora)<br>
+    3. En Storage, activa el bucket gratuito
+  </div>
+
+  <div class="card">
+    <div class="card-title">Técnico y zona</div>
+    <div class="row-2">
+      <div class="field">
+        <label>Técnico</label>
+        <input type="text" id="tec-nombre" placeholder="Tu nombre completo">
+      </div>
+      <div class="field">
+        <label>Zona / Ingenio</label>
+        <select id="tec-zona">
+          <option value="">— Zona —</option>
+          <option>La Joya</option>
+          <option>La Gloria</option>
+          <option>San Cristóbal</option>
+          <option>Independencia</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Fecha de visita</label>
+      <input type="date" id="fecha-visita">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Productor</div>
+    <div class="field">
+      <select id="sel-productor" onchange="onProductorChange()">
+        <option value="">— Selecciona un productor —</option>
+      </select>
+    </div>
+    <div id="info-productor" style="display:none; padding:10px; background:var(--verde-l); border-radius:8px; font-size:13px;"></div>
+    <button class="btn-outline-sm" onclick="openModal('modal-nuevo-prod')" style="margin-top:10px;">+ Registrar productor</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Labores culturales</div>
+    <div id="labores-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Documentación y crédito</div>
+    <div class="row-2">
+      <div class="field">
+        <label>Documentación</label>
+        <select id="documentacion">
+          <option value="">—</option>
+          <option value="completa">✅ Completa</option>
+          <option value="incompleta">⚠️ Incompleta</option>
+          <option value="pendiente">🔴 Pendiente</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Crédito</label>
+        <select id="credito">
+          <option value="">—</option>
+          <option value="al-corriente">✅ Al corriente</option>
+          <option value="en-gestion">⚠️ En gestión</option>
+          <option value="adeudo">🔴 Adeudo</option>
+          <option value="sin-credito">Sin crédito</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Observaciones</label>
+      <textarea id="observaciones" placeholder="Condición del cultivo, incidencias, acuerdos…"></textarea>
+    </div>
+    <div class="field">
+      <label>Comentarios / Recomendaciones</label>
+      <textarea id="comentarios" placeholder="Próximos pasos, recomendaciones técnicas…"></textarea>
+    </div>
+  </div>
+
+  <!-- FOTOS -->
+  <div class="card">
+    <div class="card-title">📷 Fotos de parcela</div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px;">Agrega hasta 4 fotos del cultivo o incidencias.</p>
+    <div class="foto-grid" id="foto-grid">
+      <div class="foto-add" onclick="document.getElementById('foto-input').click()">+</div>
+    </div>
+    <input type="file" id="foto-input" accept="image/*" capture="environment" style="display:none" multiple onchange="onFotos(event)">
+  </div>
+
+  <!-- FIRMA -->
+  <div class="card">
+    <div class="card-title">✍️ Firma del productor</div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px;">El productor firma directamente en pantalla.</p>
+    <canvas id="firma-canvas"></canvas>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="btn-outline-sm" onclick="limpiarFirma()">🗑 Borrar</button>
+      <span id="firma-status" style="font-size:12px;color:#888;align-self:center;"></span>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="guardarVisita()">
+    💾 Guardar visita <span id="offline-q" class="queue-badge" style="display:none"></span>
+  </button>
+  <div style="height:20px;"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 2 — SEMÁFORO TÉCNICOS
+═══════════════════════════════════════════ -->
+<div id="view-tecnicos" class="view">
+  <div class="card">
+    <div class="card-title">🗓 Hoy — <span id="hoy-label"></span></div>
+    <div id="tecnicos-list">
+      <div style="text-align:center;padding:30px;color:#bbb;">Sin datos de visitas aún</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚨 Alertas por zona</div>
+    <div style="font-size:12px;color:#888;margin-bottom:10px;">
+      Se activa cuando ≥70% de productores de una zona comparten el mismo problema.
+    </div>
+    <div id="alertas-zona">
+      <div style="text-align:center;padding:20px;color:#bbb;">Sin alertas activas</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 3 — PADRÓN DE PRODUCTORES
+═══════════════════════════════════════════ -->
+<div id="view-productores" class="view">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="buscar-prod" placeholder="Buscar por nombre, ID, zona…" oninput="renderProductores()">
+  </div>
+  <div id="lista-productores"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TAB 4 — DASHBOARD JEFE
+═══════════════════════════════════════════ -->
+<div id="view-dashboard" class="view">
+  <!-- filtro zona -->
+  <div class="card" style="padding:10px 14px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <label style="margin:0;text-transform:none;font-size:13px;font-weight:600;">Filtrar zona:</label>
+      <select id="dash-zona-filter" onchange="renderDashboard()" style="flex:1;">
+        <option value="">Todas las zonas</option>
+        <option>La Joya</option>
+        <option>La Gloria</option>
+        <option>San Cristóbal</option>
+        <option>Independencia</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="stat-grid" id="dash-stats"></div>
+
+  <div class="card">
+    <div class="card-title">Resumen por labor (última visita)</div>
+    <div class="lsr">
+      <div></div>
+      <div class="lsr-h" style="color:#1a6b2e">✅</div>
+      <div class="lsr-h" style="color:#856404">⚠️</div>
+      <div class="lsr-h" style="color:#842029">🔴</div>
+    </div>
+    <div id="dash-labores"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alertas activas</div>
+    <div id="dash-alertas"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Últimas 10 visitas</div>
+    <div id="dash-ultimas"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL NUEVO PRODUCTOR ══ -->
+<div class="overlay" id="modal-nuevo-prod">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('modal-nuevo-prod')">×</button>
+    <div class="modal-title">Nuevo productor</div>
+    <div class="row-2">
+      <div class="field"><label>Clave / ID</label><input id="np-id" placeholder="P-001"></div>
+      <div class="field"><label>Nombre</label><input id="np-nombre" placeholder="Juan López Sánchez"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>Edad</label><input type="number" id="np-edad" placeholder="58"></div>
+      <div class="field"><label>Fecha de nacimiento</label><input type="date" id="np-nac"></div>
+    </div>
+    <div class="field"><label>CURP</label><input id="np-curp" placeholder="LOJS660101…" maxlength="18" style="text-transform:uppercase"></div>
+    <div class="field"><label>Folio INE</label><input id="np-ine" placeholder="Folio credencial"></div>
+    <div class="row-2">
+      <div class="field">
+        <label>Zona / Ingenio</label>
+        <select id="np-zona">
+          <option value="">—</option>
+          <option>La Joya</option><option>La Gloria</option>
+          <option>San Cristóbal</option><option>Independencia</option>
+        </select>
+      </div>
+      <div class="field"><label>Ejido / Localidad</label><input id="np-ejido" placeholder="Ejido El Carmen"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>Superficie (ha)</label><input type="number" id="np-ha" placeholder="4.5" step="0.1"></div>
+      <div class="field"><label>Teléfono</label><input type="tel" id="np-tel" placeholder="271 100 0000"></div>
+    </div>
+    <button class="btn btn-primary" onclick="guardarProductor()">✅ Guardar productor</button>
+  </div>
+</div>
+
+<!-- ══ MODAL DETALLE PRODUCTOR ══ -->
+<div class="overlay" id="modal-detalle">
+  <div class="modal">
+    <button class="close-btn" onclick="closeModal('modal-detalle')">×</button>
+    <div id="detalle-contenido"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// LABORES CATÁLOGO
+// ══════════════════════════════════════════
+const LABORES = [
+  { key:'riego',            label:'💧 Riego' },
+  { key:'fertilizacion',    label:'🌱 Fertilización' },
+  { key:'control_plagas',   label:'🐛 Control de plagas' },
+  { key:'siembra',          label:'🌾 Siembra' },
+  { key:'resiembra',        label:'🔄 Resiembra' },
+  { key:'cachaza',          label:'♻️ Cachaza' },
+  { key:'agroquimicos',     label:'🧪 Agroquímicos' },
+  { key:'control_biologico',label:'🦋 Control biológico' },
+];
+const STATUS_OPTS = [
+  { val:'',           lbl:'— Estatus —' },
+  { val:'en-tiempo',  lbl:'✅ En tiempo' },
+  { val:'destiempo',  lbl:'⚠️ Destiempo' },
+  { val:'no-hecho',   lbl:'🔴 No ha hecho' },
+];
+
+// ══════════════════════════════════════════
+// LOCAL STORAGE
+// ══════════════════════════════════════════
+function ld(k,d){ try{ return JSON.parse(localStorage.getItem(k))??d; }catch{ return d; } }
+function sv(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+let productores = ld('gat_prod',[]);
+let visitas     = ld('gat_vis',[]);
+let fotos_b64   = [];   // fotos de la visita actual
+let offlineQueue= ld('gat_queue',[]);
+
+// ══════════════════════════════════════════
+// FIREBASE WRAPPER
+// ══════════════════════════════════════════
+const FB = window._fb || {};
+const firebaseReady = FB.isFirebaseReady || false;
+
+function updateSyncUI(){
+  const dot   = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  if(!firebaseReady){
+    dot.className='sync-dot offline';
+    label.textContent='Sin nube';
+    document.getElementById('firebase-banner').style.display='block';
+  } else if(navigator.onLine){
+    dot.className='sync-dot';
+    label.textContent='En línea';
+  } else {
+    dot.className='sync-dot offline';
+    label.textContent='Sin WiFi';
+  }
+}
+window.addEventListener('online',  ()=>{ updateSyncUI(); flushQueue(); });
+window.addEventListener('offline', ()=>{ updateSyncUI(); });
+updateSyncUI();
+
+async function pushToFirestore(col, id, data){
+  if(!firebaseReady) return false;
+  try{
+    const { db, doc, setDoc, serverTimestamp, collection } = FB;
+    await setDoc(doc(collection(db, col), id), { ...data, updatedAt: serverTimestamp() });
+    return true;
+  } catch(e){ console.warn('Firestore error:', e); return false; }
+}
+
+async function flushQueue(){
+  if(!firebaseReady || !navigator.onLine) return;
+  const q = ld('gat_queue',[]);
+  if(!q.length) return;
+  document.getElementById('sync-dot').className = 'sync-dot syncing';
+  document.getElementById('sync-label').textContent = 'Subiendo…';
+  for(const item of q){
+    await pushToFirestore(item.col, item.id, item.data);
+  }
+  sv('gat_queue',[]);
+  updateOfflineQueueBadge();
+  updateSyncUI();
+  showToast('☁️ Sincronizado con la nube');
+}
+
+async function saveWithFallback(col, id, data){
+  if(firebaseReady && navigator.onLine){
+    const ok = await pushToFirestore(col, id, data);
+    if(ok) return;
+  }
+  // Cola offline
+  const q = ld('gat_queue',[]);
+  q.push({ col, id, data });
+  sv('gat_queue', q);
+  updateOfflineQueueBadge();
+}
+
+function updateOfflineQueueBadge(){
+  const q = ld('gat_queue',[]);
+  const badge = document.getElementById('offline-q');
+  if(q.length){ badge.style.display='inline-block'; badge.textContent=`${q.length} pendiente(s)`; }
+  else         { badge.style.display='none'; }
+}
+updateOfflineQueueBadge();
+
+// Escuchar Firestore en tiempo real (para el jefe)
+function subscribeFirestore(){
+  if(!firebaseReady) return;
+  const { db, collection, onSnapshot, query, orderBy } = FB;
+  onSnapshot(query(collection(db,'visitas'), orderBy('fecha','desc')), snap => {
+    snap.forEach(d => {
+      const data = d.data();
+      if(!visitas.find(v=>v.id===d.id)){
+        visitas.push({ id:d.id, ...data });
+      }
+    });
+    sv('gat_vis', visitas);
+    if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
+    if(document.getElementById('view-tecnicos').classList.contains('active')) renderTecnicos();
+  });
+  onSnapshot(collection(db,'productores'), snap => {
+    snap.forEach(d => {
+      const data = d.data();
+      if(!productores.find(p=>p.id===d.id)){
+        productores.push({ id:d.id, ...data });
+      }
+    });
+    sv('gat_prod', productores);
+    populateSelect();
+    if(document.getElementById('view-productores').classList.contains('active')) renderProductores();
+  });
+}
+subscribeFirestore();
+
+// ══════════════════════════════════════════
+// FIRMA EN CANVAS
+// ══════════════════════════════════════════
+let firmaData = null;
+const canvas  = document.getElementById('firma-canvas');
+const ctx     = canvas.getContext('2d');
+let drawing   = false, lastX=0, lastY=0;
+
+function resizeCanvas(){
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = rect.width  * window.devicePixelRatio;
+  canvas.height = rect.height * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function getPos(e){
+  const rect = canvas.getBoundingClientRect();
+  const src  = e.touches ? e.touches[0] : e;
+  return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+}
+canvas.addEventListener('pointerdown',  e=>{ drawing=true; const p=getPos(e); lastX=p.x; lastY=p.y; });
+canvas.addEventListener('pointermove',  e=>{
+  if(!drawing) return;
+  const p = getPos(e);
+  ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(p.x,p.y); ctx.stroke();
+  lastX=p.x; lastY=p.y;
+  canvas.classList.add('signed');
+  document.getElementById('firma-status').textContent='✅ Firma capturada';
+});
+canvas.addEventListener('pointerup',   ()=>{ drawing=false; firmaData=canvas.toDataURL('image/png'); });
+canvas.addEventListener('pointerleave',()=>{ drawing=false; });
+
+function limpiarFirma(){
+  const rect = canvas.getBoundingClientRect();
+  ctx.clearRect(0,0,rect.width,rect.height);
+  canvas.classList.remove('signed');
+  firmaData=null;
+  document.getElementById('firma-status').textContent='';
+}
+
+// ══════════════════════════════════════════
+// FOTOS
+// ══════════════════════════════════════════
+const MAX_FOTOS = 4;
+function onFotos(e){
+  const files = Array.from(e.target.files).slice(0, MAX_FOTOS - fotos_b64.length);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      fotos_b64.push(ev.target.result);
+      renderFotoGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value='';
+}
+function renderFotoGrid(){
+  const grid = document.getElementById('foto-grid');
+  grid.innerHTML = fotos_b64.map((src,i) =>
+    `<img class="foto-thumb" src="${src}" onclick="removeFoto(${i})" title="Toca para eliminar">`
+  ).join('') + (fotos_b64.length < MAX_FOTOS
+    ? `<div class="foto-add" onclick="document.getElementById('foto-input').click()">+</div>`
+    : '');
+}
+function removeFoto(i){ fotos_b64.splice(i,1); renderFotoGrid(); }
+
+async function uploadFoto(b64, path){
+  if(!firebaseReady) return b64; // guarda base64 local
+  try{
+    const { storage, ref, uploadString, getDownloadURL } = FB;
+    const storageRef = ref(storage, path);
+    await uploadString(storageRef, b64, 'data_url');
+    return await getDownloadURL(storageRef);
+  } catch(e){ return b64; }
+}
+
+// ══════════════════════════════════════════
+// LABORES GRID
+// ══════════════════════════════════════════
+function buildLaborGrid(){
+  document.getElementById('labores-grid').innerHTML = LABORES.map(l=>`
+    <div class="labor-row" id="lr-${l.key}">
+      <div class="labor-nombre">${l.label}</div>
+      <select class="labor-sel" onchange="onLaborChange('${l.key}',this)">
+        ${STATUS_OPTS.map(o=>`<option value="${o.val}">${o.lbl}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+function onLaborChange(key,sel){
+  document.getElementById('lr-'+key).className = 'labor-row ' + sel.value;
+}
+function getLaborValues(){
+  return Object.fromEntries(LABORES.map(l=>[l.key, document.querySelector(`#lr-${l.key} select`)?.value||'']));
+}
+function resetLabores(){ LABORES.forEach(l=>{ const s=document.querySelector(`#lr-${l.key} select`); if(s){s.value=''; onLaborChange(l.key,s);} }); }
+
+// ══════════════════════════════════════════
+// SELECT PRODUCTOR
+// ══════════════════════════════════════════
+function populateSelect(){
+  const sel = document.getElementById('sel-productor');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Selecciona un productor —</option>' +
+    productores.map(p=>`<option value="${p.id}">${p.id} · ${p.nombre}</option>`).join('');
+  sel.value = cur;
+}
+function onProductorChange(){
+  const id  = document.getElementById('sel-productor').value;
+  const div = document.getElementById('info-productor');
+  if(!id){ div.style.display='none'; return; }
+  const p = productores.find(x=>x.id===id);
+  if(!p) return;
+  div.style.display='block';
+  div.innerHTML=`<strong>${p.nombre}</strong> · ${p.edad||'?'} años<br>
+    ${p.zona?`<span class="zona-pill">${p.zona}</span> `:''}${p.ejido||''} · ${p.ha||'?'} ha`;
+}
+
+// ══════════════════════════════════════════
+// GUARDAR PRODUCTOR
+// ══════════════════════════════════════════
+async function guardarProductor(){
+  const id     = document.getElementById('np-id').value.trim();
+  const nombre = document.getElementById('np-nombre').value.trim();
+  if(!id||!nombre){ showToast('⚠️ ID y nombre son obligatorios'); return; }
+  if(productores.find(p=>p.id===id)){ showToast('⚠️ Ya existe ese ID'); return; }
+  const p = {
+    id, nombre,
+    edad:  document.getElementById('np-edad').value,
+    nac:   document.getElementById('np-nac').value,
+    curp:  document.getElementById('np-curp').value.toUpperCase(),
+    ine:   document.getElementById('np-ine').value,
+    zona:  document.getElementById('np-zona').value,
+    ejido: document.getElementById('np-ejido').value,
+    ha:    document.getElementById('np-ha').value,
+    tel:   document.getElementById('np-tel').value,
+  };
+  productores.push(p);
+  sv('gat_prod', productores);
+  await saveWithFallback('productores', id, p);
+  populateSelect();
+  closeModal('modal-nuevo-prod');
+  showToast('✅ Productor registrado');
+  ['np-id','np-nombre','np-edad','np-nac','np-curp','np-ine','np-ejido','np-ha','np-tel']
+    .forEach(i=>{ document.getElementById(i).value=''; });
+  document.getElementById('np-zona').value='';
+}
+
+// ══════════════════════════════════════════
+// GUARDAR VISITA
+// ══════════════════════════════════════════
+async function guardarVisita(){
+  const pid   = document.getElementById('sel-productor').value;
+  const fecha = document.getElementById('fecha-visita').value;
+  const tec   = document.getElementById('tec-nombre').value.trim();
+  const zona  = document.getElementById('tec-zona').value;
+  if(!pid)  { showToast('⚠️ Selecciona un productor'); return; }
+  if(!fecha){ showToast('⚠️ Indica la fecha');         return; }
+  if(!tec)  { showToast('⚠️ Escribe tu nombre');       return; }
+
+  showToast('⏳ Guardando…');
+
+  const id = Date.now().toString();
+
+  // Subir fotos
+  const fotosUrls = await Promise.all(
+    fotos_b64.map((b, i) => uploadFoto(b, `visitas/${id}/foto_${i}.jpg`))
+  );
+  // Firma
+  let firmaUrl = null;
+  if(firmaData) firmaUrl = await uploadFoto(firmaData, `visitas/${id}/firma.png`);
+
+  const visita = {
+    id, productorId:pid, fecha, tecnico:tec, zona,
+    labores:      getLaborValues(),
+    observaciones: document.getElementById('observaciones').value.trim(),
+    comentarios:   document.getElementById('comentarios').value.trim(),
+    documentacion: document.getElementById('documentacion').value,
+    credito:       document.getElementById('credito').value,
+    fotos:         fotosUrls,
+    firma:         firmaUrl,
+    ts:            new Date().toISOString(),
+  };
+
+  visitas.push(visita);
+  sv('gat_vis', visitas);
+  await saveWithFallback('visitas', id, visita);
+
+  showToast('✅ Visita guardada');
+
+  // Reset
+  document.getElementById('sel-productor').value='';
+  document.getElementById('info-productor').style.display='none';
+  document.getElementById('observaciones').value='';
+  document.getElementById('comentarios').value='';
+  document.getElementById('documentacion').value='';
+  document.getElementById('credito').value='';
+  fotos_b64=[]; renderFotoGrid();
+  limpiarFirma();
+  resetLabores();
+}
+
+// ══════════════════════════════════════════
+// SEMÁFORO TÉCNICOS
+// ══════════════════════════════════════════
+function renderTecnicos(){
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('hoy-label').textContent =
+    new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'});
+
+  const visHoy   = visitas.filter(v=>v.fecha===hoy);
+  const tecMap   = {};
+  visHoy.forEach(v=>{
+    const k = v.tecnico||'Sin nombre';
+    if(!tecMap[k]) tecMap[k]={ zona:v.zona||'—', visitados:new Set(), ids:[] };
+    tecMap[k].visitados.add(v.productorId);
+    tecMap[k].ids.push(v.id);
+  });
+
+  // Productores asignados por zona
+  const zonaCount = {};
+  productores.forEach(p=>{ if(p.zona){ zonaCount[p.zona]=(zonaCount[p.zona]||0)+1; } });
+
+  const list = document.getElementById('tecnicos-list');
+  if(!Object.keys(tecMap).length){
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#bbb;">Sin visitas registradas hoy</div>';
+  } else {
+    list.innerHTML = Object.entries(tecMap).map(([nombre, t])=>{
+      const total    = zonaCount[t.zona] || '?';
+      const visitado = t.visitados.size;
+      const pct      = typeof total === 'number' ? Math.round(visitado/total*100) : 0;
+      const cls      = pct>=80?'':pct>=50?'warn':'alert';
+      const emoji    = pct>=80?'🟢':pct>=50?'🟡':'🔴';
+      return `
+        <div class="tec-card ${cls}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div class="tec-nombre">${emoji} ${nombre}</div>
+              <div class="tec-zona">Zona: ${t.zona}</div>
+            </div>
+            <div style="font-size:24px;font-weight:900;color:${pct>=80?'var(--verde)':pct>=50?'var(--amarillo)':'var(--rojo)'}">
+              ${pct}%
+            </div>
+          </div>
+          <div class="semaforo-bar" style="--pct:${pct}%"></div>
+          <div class="tec-counters">
+            <div class="tec-cnt" style="background:#edfada;color:var(--verde-d)">
+              ${visitado}<small>Visitados</small>
+            </div>
+            <div class="tec-cnt" style="background:#fdecea;color:var(--rojo)">
+              ${typeof total==='number'?total-visitado:'?'}<small>Pendientes</small>
+            </div>
+            <div class="tec-cnt" style="background:var(--caña-l);color:var(--tierra)">
+              ${total}<small>Asignados</small>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  renderAlertasZona();
+}
+
+// ══════════════════════════════════════════
+// ALERTAS POR ZONA (≥70%)
+// ══════════════════════════════════════════
+const UMBRAL = 0.70; // 70%
+function renderAlertasZona(){
+  const zonas = [...new Set(productores.map(p=>p.zona).filter(Boolean))];
+  const alertas = [];
+
+  zonas.forEach(zona => {
+    const prods  = productores.filter(p=>p.zona===zona);
+    if(!prods.length) return;
+    const total  = prods.length;
+
+    LABORES.forEach(labor => {
+      let count = 0;
+      prods.forEach(p => {
+        const pvs = visitas.filter(v=>v.productorId===p.id);
+        if(!pvs.length) return;
+        const last = pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+        if(last.labores[labor.key]==='no-hecho') count++;
+      });
+      const pct = count/total;
+      if(pct >= UMBRAL) alertas.push({ zona, labor:labor.label, count, total, pct, tipo:'critical' });
+      else if(pct >= 0.5) alertas.push({ zona, labor:labor.label, count, total, pct, tipo:'warning' });
+    });
+  });
+
+  const div = document.getElementById('alertas-zona');
+  if(!alertas.length){
+    div.innerHTML='<div style="text-align:center;padding:16px;color:#bbb;">✅ Sin alertas de zona</div>';
+    return;
+  }
+  div.innerHTML = alertas.map(a=>`
+    <div class="alerta-zona ${a.tipo}">
+      <span class="az-pct" style="color:${a.tipo==='critical'?'var(--rojo)':'var(--amarillo)'}">
+        ${Math.round(a.pct*100)}%
+      </span>
+      <div class="az-header">${a.tipo==='critical'?'🚨':'⚠️'} ${a.zona} — ${a.labor}</div>
+      <div class="az-sub">${a.count} de ${a.total} productores <strong>no han realizado</strong> esta labor</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// PADRÓN
+// ══════════════════════════════════════════
+function calcScore(pid){
+  const pvs = visitas.filter(v=>v.productorId===pid);
+  if(!pvs.length) return null;
+  const last = pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+  let ok=0,warn=0,bad=0;
+  LABORES.forEach(l=>{
+    const s=last.labores[l.key];
+    if(s==='en-tiempo')ok++;
+    else if(s==='destiempo')warn++;
+    else if(s==='no-hecho')bad++;
+  });
+  return { ok,warn,bad,total:LABORES.length,fecha:last.fecha };
+}
+function scoreColor(s){
+  if(!s) return '#bbb';
+  if(s.bad>3) return 'var(--rojo)';
+  if(s.bad>1||s.warn>3) return 'var(--amarillo)';
+  return 'var(--verde)';
+}
+function scoreEmoji(s){
+  if(!s) return '—';
+  if(s.bad>3) return '🔴';
+  if(s.bad>1||s.warn>3) return '🟡';
+  return '⭐';
+}
+function renderProductores(){
+  const q = (document.getElementById('buscar-prod').value||'').toLowerCase();
+  const lista = document.getElementById('lista-productores');
+  const fil   = productores.filter(p=>
+    p.nombre.toLowerCase().includes(q)||p.id.toLowerCase().includes(q)||
+    (p.zona||'').toLowerCase().includes(q)||(p.ejido||'').toLowerCase().includes(q)
+  );
+  if(!fil.length){
+    lista.innerHTML='<div style="text-align:center;padding:32px;color:#bbb;">Sin productores registrados</div>';
+    return;
+  }
+  lista.innerHTML = fil.map(p=>{
+    const s = calcScore(p.id);
+    const c = scoreColor(s); const e = scoreEmoji(s);
+    const nv= visitas.filter(v=>v.productorId===p.id).length;
+    return `<div class="prod-item" onclick="verDetalle('${p.id}')">
+      <div class="prod-left">
+        <div class="prod-id">${p.id}</div>
+        <div class="prod-name">${p.nombre}</div>
+        <div class="prod-meta">${p.zona?`${p.zona} · `:''}${p.ejido||''} · ${p.ha||'?'} ha · ${nv} visita(s)</div>
+      </div>
+      <div class="score-circle" style="background:${c}22;color:${c};border:2.5px solid ${c}">${e}</div>
+    </div>`;
+  }).join('');
+}
+
+function verDetalle(pid){
+  const p  = productores.find(x=>x.id===pid);
+  if(!p) return;
+  const pvs= visitas.filter(v=>v.productorId===pid).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const s  = calcScore(pid);
+
+  let alerta='';
+  if(!s)       alerta=`<span class="badge badge-n">⚠️ Sin visitas</span>`;
+  else if(s.bad>3) alerta=`<span class="badge badge-r">🚨 ${s.bad} labores sin hacer</span>`;
+  else if(s.ok===s.total) alerta=`<span class="badge badge-g">⭐ Todo al día</span>`;
+  else alerta=`<span class="badge badge-y">⚠️ ${s.warn} destiempo · ${s.bad} pendientes</span>`;
+
+  const hisHtml = pvs.length ? pvs.map(v=>{
+    const badges = LABORES.map(l=>{
+      const st=v.labores[l.key]||'';
+      const cl=st==='en-tiempo'?'badge-g':st==='destiempo'?'badge-y':st==='no-hecho'?'badge-r':'badge-n';
+      const ic=st==='en-tiempo'?'✅':st==='destiempo'?'⚠️':st==='no-hecho'?'🔴':'·';
+      return `<span class="badge ${cl}">${ic} ${l.label.split(' ').slice(1).join(' ')}</span>`;
+    }).join('');
+    const fotoHtml = v.fotos?.length
+      ? `<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
+           ${v.fotos.map(f=>`<img src="${f}" style="height:60px;border-radius:6px;object-fit:cover;">`).join('')}
+         </div>` : '';
+    const firmaHtml = v.firma
+      ? `<div style="margin-top:6px;"><img src="${v.firma}" style="height:50px;border:1px solid #ddd;border-radius:6px;background:#fafafa;"></div>` : '';
+    return `<div style="padding:12px 0;border-bottom:1px solid #f0f0f0;">
+      <div style="display:flex;justify-content:space-between;">
+        <strong>📅 ${v.fecha}</strong>
+        <span style="font-size:11px;color:#888;">${v.tecnico||'N/D'}</span>
+      </div>
+      <div style="margin:6px 0;">${badges}</div>
+      ${v.observaciones?`<div style="font-size:12px;color:#555;">📝 ${v.observaciones}</div>`:''}
+      ${fotoHtml}${firmaHtml}
+    </div>`;
+  }).join('') : '<div style="color:#bbb;text-align:center;padding:16px;">Sin visitas</div>';
+
+  document.getElementById('detalle-contenido').innerHTML=`
+    <div class="modal-title">${p.nombre}</div>
+    ${p.zona?`<span class="zona-pill">${p.zona}</span>`:''}
+    <div style="font-size:12px;color:#888;margin:6px 0 10px;">${p.id} · ${p.edad||'?'} años · ${p.ejido||''}</div>
+    ${alerta}
+    <div class="divider"></div>
+    <div class="sec-label">Datos del productor</div>
+    <div style="font-size:13px;line-height:1.9;">
+      <b>CURP:</b> ${p.curp||'N/D'}<br>
+      <b>INE:</b>  ${p.ine||'N/D'}<br>
+      <b>Superficie:</b> ${p.ha||'?'} ha · <b>Tel:</b> ${p.tel||'N/D'}
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">Historial de visitas</div>
+    ${hisHtml}
+    <div style="height:10px;"></div>
+    <button class="btn btn-danger btn-sm" onclick="eliminarProductor('${pid}')">🗑 Eliminar</button>`;
+  openModal('modal-detalle');
+}
+
+function eliminarProductor(pid){
+  if(!confirm('¿Eliminar productor y todas sus visitas?')) return;
+  productores = productores.filter(p=>p.id!==pid);
+  visitas     = visitas.filter(v=>v.productorId!==pid);
+  sv('gat_prod',productores); sv('gat_vis',visitas);
+  populateSelect(); closeModal('modal-detalle'); renderProductores();
+  showToast('Productor eliminado');
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD JEFE
+// ══════════════════════════════════════════
+function renderDashboard(){
+  const zonaF = document.getElementById('dash-zona-filter').value;
+  const filtP  = zonaF ? productores.filter(p=>p.zona===zonaF) : productores;
+  const filtPids= new Set(filtP.map(p=>p.id));
+  const filtV  = visitas.filter(v=>filtPids.has(v.productorId));
+
+  const total     = filtP.length;
+  const conVisita = [...new Set(filtV.map(v=>v.productorId))].length;
+  const sinVisita = total - conVisita;
+
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--verde)">${total}</div>
+      <div class="stat-lbl">Productores</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--azul)">${filtV.length}</div>
+      <div class="stat-lbl">Visitas</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:${sinVisita?'var(--rojo)':'var(--verde)'}">${sinVisita}</div>
+      <div class="stat-lbl">Sin visitar</div>
+    </div>`;
+
+  // Por labor — última visita de cada prod
+  const laborSt = {};
+  LABORES.forEach(l=>{ laborSt[l.key]={ok:0,warn:0,bad:0}; });
+  filtP.forEach(p=>{
+    const pvs=filtV.filter(v=>v.productorId===p.id);
+    if(!pvs.length) return;
+    const last=pvs.sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];
+    LABORES.forEach(l=>{
+      const s=last.labores[l.key];
+      if(s==='en-tiempo')laborSt[l.key].ok++;
+      else if(s==='destiempo')laborSt[l.key].warn++;
+      else if(s==='no-hecho')laborSt[l.key].bad++;
+    });
+  });
+  document.getElementById('dash-labores').innerHTML=LABORES.map(l=>{
+    const st=laborSt[l.key];
+    return `<div class="lsr">
+      <div class="lsr-n">${l.label}</div>
+      <div class="lsr-v" style="color:#1a6b2e">${st.ok}</div>
+      <div class="lsr-v" style="color:#856404">${st.warn}</div>
+      <div class="lsr-v" style="color:#842029">${st.bad}</div>
+    </div>`;
+  }).join('');
+
+  // Alertas
+  const alertas=[];
+  filtP.forEach(p=>{
+    const s=calcScore(p.id);
+    if(!s) alertas.push({tipo:'warn',msg:`${p.nombre} (${p.id}) — sin visitas`});
+    else if(s.bad>3) alertas.push({tipo:'alert',msg:`${p.nombre} — ${s.bad} labores sin realizar (${s.fecha})`});
+  });
+  document.getElementById('dash-alertas').innerHTML=alertas.length
+    ? alertas.map(a=>`<div style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+        <span class="badge ${a.tipo==='alert'?'badge-r':'badge-y'}">${a.tipo==='alert'?'🚨':'⚠️'}</span>
+        <span style="margin-left:6px;">${a.msg}</span>
+      </div>`).join('')
+    : '<div style="text-align:center;padding:16px;color:#bbb;">✅ Sin alertas</div>';
+
+  // Últimas
+  const ult=[...filtV].sort((a,b)=>b.ts.localeCompare(a.ts)).slice(0,10);
+  document.getElementById('dash-ultimas').innerHTML=ult.length
+    ? ult.map(v=>{
+        const p=productores.find(x=>x.id===v.productorId);
+        const ok =Object.values(v.labores).filter(x=>x==='en-tiempo').length;
+        const bad=Object.values(v.labores).filter(x=>x==='no-hecho').length;
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:13px;">
+          <div>
+            <strong>${p?p.nombre:v.productorId}</strong>
+            <div style="font-size:11px;color:#888;">${v.fecha} · ${v.tecnico||'N/D'} · ${v.zona||''}</div>
+          </div>
+          <div>
+            <span class="badge badge-g">✅${ok}</span>
+            <span class="badge badge-r">🔴${bad}</span>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div style="text-align:center;padding:16px;color:#bbb;">Sin visitas</div>';
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelector(`[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('view-'+name).classList.add('active');
+  if(name==='productores') renderProductores();
+  if(name==='dashboard')   renderDashboard();
+  if(name==='tecnicos')    renderTecnicos();
+}
+
+// ══════════════════════════════════════════
+// MODALES
+// ══════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('active'); document.body.style.overflow=''; }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) closeModal(o.id); }));
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+buildLaborGrid();
+populateSelect();
+document.getElementById('fecha-visita').value = new Date().toISOString().split('T')[0];
+const stn = localStorage.getItem('gat_tec_nombre');
+const stz = localStorage.getItem('gat_tec_zona');
+if(stn) document.getElementById('tec-nombre').value=stn;
+if(stz) document.getElementById('tec-zona').value=stz;
+document.getElementById('tec-nombre').addEventListener('change',e=>localStorage.setItem('gat_tec_nombre',e.target.value));
+document.getElementById('tec-zona').addEventListener('change',e=>localStorage.setItem('gat_tec_zona',e.target.value));
+
+// Intentar sincronizar cola pendiente al cargar
+setTimeout(flushQueue, 2000);
+</script>
+</body>
+</html>
