@@ -5,18 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>GAT · Labores Culturales</title>
 
-<!-- Firebase SDK -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, query, where, orderBy, serverTimestamp, getDoc }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadString, getDownloadURL }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
-// ╔══════════════════════════════════════════════════════════╗
-// ║  🔧 REEMPLAZA ESTOS VALORES CON TU CONFIGURACIÓN FIREBASE ║
-// ║  console.firebase.google.com → Tu proyecto → Configuración║
-// ╚══════════════════════════════════════════════════════════╝
+<!-- Firebase SDK (compat mode — funciona en GitHub Pages) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
 const firebaseConfig = {
   apiKey:            "AIzaSyBZT3LMUfd7H_wdfPZNpCY33Sew4gkXjVc",
   authDomain:        "gat-labores.firebaseapp.com",
@@ -26,19 +18,32 @@ const firebaseConfig = {
   appId:             "1:942298973099:web:fd88a66083e442aeea08ee"
 };
 
-let app, db, storage, isFirebaseReady = false;
+let _db = null, isFirebaseReady = false;
 try {
-  if (!firebaseConfig.apiKey.startsWith("TU_")) {
-    app     = initializeApp(firebaseConfig);
-    db      = getFirestore(app);
-    storage = getStorage(app);
-    isFirebaseReady = true;
-  }
-} catch(e) { console.warn("Firebase no configurado:", e); }
+  firebase.initializeApp(firebaseConfig);
+  _db = firebase.firestore();
+  isFirebaseReady = true;
+} catch(e) { console.warn("Firebase error:", e); }
 
-window._fb = { db, storage, isFirebaseReady,
-  collection, doc, setDoc, getDocs, onSnapshot, query, where, orderBy, serverTimestamp, getDoc,
-  ref, uploadString, getDownloadURL };
+// Wrapper para compatibilidad con el resto del código
+window._fb = {
+  isFirebaseReady,
+  db: _db,
+  storage: null,
+  collection: (db, col) => db.collection(col),
+  doc: (db, col, id) => db.collection(col).doc(id),
+  setDoc: (ref, data) => ref.set(data),
+  getDocs: (q) => q.get(),
+  onSnapshot: (q, cb) => q.onSnapshot(snap => {
+    snap.forEach(d => cb({ forEach: fn => snap.forEach(fn) }));
+  }),
+  query: (ref) => ref,
+  where: (f, op, v) => ({ field:f, op, val:v }),
+  orderBy: (f, dir) => ({ field:f, dir }),
+  serverTimestamp: () => firebase.firestore.FieldValue.serverTimestamp(),
+  getDoc: (ref) => ref.get(),
+  ref: null, uploadString: null, getDownloadURL: null,
+};
 </script>
 
 <style>
@@ -600,13 +605,12 @@ let offlineQueue= ld('gat_queue',[]);
 // ══════════════════════════════════════════
 // FIREBASE WRAPPER
 // ══════════════════════════════════════════
-const FB = window._fb || {};
-const firebaseReady = FB.isFirebaseReady || false;
+// Firebase ready state comes from global isFirebaseReady set in head script
 
 function updateSyncUI(){
   const dot   = document.getElementById('sync-dot');
   const label = document.getElementById('sync-label');
-  if(!firebaseReady){
+  if(!isFirebaseReady){
     dot.className='sync-dot offline';
     label.textContent='Sin nube';
     document.getElementById('firebase-banner').style.display='block';
@@ -623,16 +627,15 @@ window.addEventListener('offline', ()=>{ updateSyncUI(); });
 updateSyncUI();
 
 async function pushToFirestore(col, id, data){
-  if(!firebaseReady) return false;
+  if(!isFirebaseReady || !_db) return false;
   try{
-    const { db, doc, setDoc, serverTimestamp, collection } = FB;
-    await setDoc(doc(collection(db, col), id), { ...data, updatedAt: serverTimestamp() });
+    await _db.collection(col).doc(id).set({ ...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
     return true;
   } catch(e){ console.warn('Firestore error:', e); return false; }
 }
 
 async function flushQueue(){
-  if(!firebaseReady || !navigator.onLine) return;
+  if(!isFirebaseReady || !navigator.onLine) return;
   const q = ld('gat_queue',[]);
   if(!q.length) return;
   document.getElementById('sync-dot').className = 'sync-dot syncing';
@@ -647,7 +650,7 @@ async function flushQueue(){
 }
 
 async function saveWithFallback(col, id, data){
-  if(firebaseReady && navigator.onLine){
+  if(isFirebaseReady && navigator.onLine){
     const ok = await pushToFirestore(col, id, data);
     if(ok) return;
   }
@@ -668,9 +671,8 @@ updateOfflineQueueBadge();
 
 // Escuchar Firestore en tiempo real (para el jefe)
 function subscribeFirestore(){
-  if(!firebaseReady) return;
-  const { db, collection, onSnapshot, query, orderBy } = FB;
-  onSnapshot(query(collection(db,'visitas'), orderBy('fecha','desc')), snap => {
+  if(!isFirebaseReady || !_db) return;
+  _db.collection('visitas').orderBy('fecha','desc').onSnapshot(snap => {
     snap.forEach(d => {
       const data = d.data();
       if(!visitas.find(v=>v.id===d.id)){
@@ -681,7 +683,7 @@ function subscribeFirestore(){
     if(document.getElementById('view-dashboard').classList.contains('active')) renderDashboard();
     if(document.getElementById('view-tecnicos').classList.contains('active')) renderTecnicos();
   });
-  onSnapshot(collection(db,'productores'), snap => {
+  _db.collection('productores').onSnapshot(snap => {
     snap.forEach(d => {
       const data = d.data();
       if(!productores.find(p=>p.id===d.id)){
